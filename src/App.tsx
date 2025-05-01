@@ -5,10 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 
-import { createAppKit } from "@reown/appkit";
+import { createAppKit, AppKit } from "@reown/appkit";
 import { createConfig, configureChains, WagmiConfig } from "wagmi";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc"; // ✅ updated
+import { publicProvider } from "wagmi/providers/public";
 import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
 
 import Index from "./pages/Index";
@@ -24,16 +24,10 @@ import NotFound from "./pages/NotFound";
 // 🆔 Reown Project ID
 const projectId = "b416daa29430acf394a8a82ba73e007f";
 
-// ✅ Wagmi + Chains Setup (fixed with jsonRpcProvider)
+// ✅ Wagmi + Chains Setup
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, polygon, arbitrum, optimism],
-  [
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: chain.rpcUrls.default.http[0], // ✅ fix for 'http' undefined
-      }),
-    }),
-  ]
+  [publicProvider()]
 );
 
 const connectors = [
@@ -53,8 +47,8 @@ export const config = createConfig({
   webSocketPublicClient,
 });
 
-// ✅ Initialize Reown AppKit
-createAppKit({
+// ✅ Initialize Reown AppKit and store in window
+const appKitInstance = createAppKit({
   projectId,
   networks: [
     {
@@ -87,6 +81,11 @@ createAppKit({
   },
 });
 
+// ✅ Store AppKit instance globally
+if (typeof window !== "undefined") {
+  (window as any).reownAppKit = appKitInstance;
+}
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -95,7 +94,6 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <BrowserRouter>
-            {/* ✅ WalletProvider must be inside WagmiConfig */}
             <WalletProvider>
               <Toaster />
               <Sonner />
