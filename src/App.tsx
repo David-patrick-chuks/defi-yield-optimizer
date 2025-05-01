@@ -29,10 +29,10 @@ const publicClient = createPublicClient({
   transport: http()
 });
 
-// Create wagmi config with proper configuration using getPublicClient function
+// Create wagmi config with proper configuration
 export const config = createConfig({
-  // Use a function that returns the publicClient to match expected type
-  publicClient: () => publicClient,
+  // Implement a function that takes chainId config and returns the public client
+  publicClient: ({ chainId }) => publicClient,
   connectors: [],
 });
 
