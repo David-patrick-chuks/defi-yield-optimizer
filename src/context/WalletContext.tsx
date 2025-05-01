@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAccount, useConnect, useDisconnect, useBalance, useChainId } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useBalance, useNetwork } from 'wagmi';
 
 // Define the AppKit type for the global window object
 type AppKit = {
@@ -44,7 +44,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   
   // Using wagmi hooks
   const { address, isConnected } = useAccount();
-  const chainId = useChainId();
+  const { chain } = useNetwork();
+  const chainId = chain?.id;
   const { disconnect } = useDisconnect();
   const { data: balanceData } = useBalance({
     address,
