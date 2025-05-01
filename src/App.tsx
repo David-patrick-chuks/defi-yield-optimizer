@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 
-import { createAppKit, AppKit } from "@reown/appkit";
+import { createAppKit } from "@reown/appkit";
 import { createConfig, configureChains, WagmiConfig } from "wagmi";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { publicProvider } from "wagmi/providers/public";
@@ -25,6 +26,7 @@ import NotFound from "./pages/NotFound";
 const projectId = "b416daa29430acf394a8a82ba73e007f";
 
 // ✅ Wagmi + Chains Setup
+// Using wagmi v1 configureChains API with publicProvider
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, polygon, arbitrum, optimism],
   [publicProvider()]
@@ -45,7 +47,8 @@ const connectors = [
   }),
 ];
 
-export const config = createConfig({
+// Using the correct createConfig for wagmi v1
+const config = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
