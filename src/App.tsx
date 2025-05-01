@@ -1,14 +1,15 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
-import { createAppKit } from '@reown/appkit';
-import { createConfig } from 'wagmi';
-import { http } from 'viem'; // Import http from viem, not wagmi
-import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
+
+import { createAppKit } from "@reown/appkit";
+import { createConfig, configureChains, WagmiConfig } from "wagmi";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { publicProvider } from "wagmi/providers/public";
+import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
 
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -20,16 +21,33 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
-// Reown AppKit setup
-const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided project ID
+// 🆔 Reown Project ID
+const projectId = "b416daa29430acf394a8a82ba73e007f";
 
-// Create wagmi config with proper configuration
+// ✅ Wagmi + Chains Setup
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [mainnet, polygon, arbitrum, optimism],
+  [publicProvider()]
+);
+
+const connectors = [
+  new WalletConnectConnector({
+    chains,
+    options: {
+      projectId,
+      showQrModal: true,
+    },
+  }),
+];
+
 export const config = createConfig({
-  // Use correct properties for wagmi v1.4.12
-  connectors: [],
+  autoConnect: true,
+  connectors,
+  publicClient,
+  webSocketPublicClient,
 });
 
-// Initialize Reown AppKit with proper configuration
+// ✅ Initialize Reown AppKit
 createAppKit({
   projectId,
   networks: [
@@ -37,36 +55,36 @@ createAppKit({
       id: mainnet.id,
       name: mainnet.name,
       nativeCurrency: mainnet.nativeCurrency,
-      rpcUrls: mainnet.rpcUrls
+      rpcUrls: mainnet.rpcUrls,
     },
     {
       id: polygon.id,
       name: polygon.name,
       nativeCurrency: polygon.nativeCurrency,
-      rpcUrls: polygon.rpcUrls
+      rpcUrls: polygon.rpcUrls,
     },
     {
       id: arbitrum.id,
       name: arbitrum.name,
       nativeCurrency: arbitrum.nativeCurrency,
-      rpcUrls: arbitrum.rpcUrls
+      rpcUrls: arbitrum.rpcUrls,
     },
     {
       id: optimism.id,
       name: optimism.name,
       nativeCurrency: optimism.nativeCurrency,
-      rpcUrls: optimism.rpcUrls
-    }
+      rpcUrls: optimism.rpcUrls,
+    },
   ],
   themeVariables: {
-    '--w3m-accent': '#5E9C76', // Match sage-500 color
+    "--w3m-accent": "#5E9C76",
   },
 });
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <>
+  <WagmiConfig config={config}>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
@@ -88,7 +106,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
-  </>
+  </WagmiConfig>
 );
 
 export default App;
