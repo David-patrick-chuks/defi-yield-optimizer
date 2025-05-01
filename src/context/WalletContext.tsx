@@ -3,7 +3,8 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAccount, useConnect, useDisconnect, useBalance, useChainId } from 'wagmi';
-import { openWeb3Modal } from '@reown/appkit/modal';
+// Import correctly from the main package, not a submodule
+import { openWeb3Modal } from '@reown/appkit';
 
 interface WalletContextType {
   address: string | undefined;

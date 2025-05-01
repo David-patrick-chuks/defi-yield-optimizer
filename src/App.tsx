@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 import { createAppKit } from '@reown/appkit';
-import { createConfig } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
 
 import Index from "./pages/Index";
@@ -22,20 +22,20 @@ import NotFound from "./pages/NotFound";
 // Reown AppKit setup
 const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided project ID
 
+// Create wagmi config with proper transports
 export const config = createConfig({
-  chains: [mainnet, polygon, arbitrum, optimism],
   transports: {
-    [mainnet.id]: mainnet.transport(),
-    [polygon.id]: polygon.transport(),
-    [arbitrum.id]: arbitrum.transport(),
-    [optimism.id]: optimism.transport(),
+    [mainnet.id]: http(),
+    [polygon.id]: http(),
+    [arbitrum.id]: http(),
+    [optimism.id]: http(),
   },
 });
 
-// Initialize Reown AppKit
+// Initialize Reown AppKit with proper configuration
 createAppKit({
   projectId,
-  wagmiConfig: config,
+  // Setup according to Reown AppKit documentation
   themeVariables: {
     '--w3m-accent': '#5E9C76', // Match sage-500 color
   },
