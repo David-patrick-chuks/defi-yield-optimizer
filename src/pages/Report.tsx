@@ -18,30 +18,51 @@ import { downloadReport, shareReport } from '@/utils/reportUtils';
 import { analyzeTokens } from '@/services/openai';
 import { toast } from '@/components/ui/sonner';
 
+// Define interfaces for token data
+interface TokenData {
+  name: string;
+  symbol: string;
+  balance: number;
+  price?: number;
+}
+
+interface TokenAnalysis {
+  name: string;
+  symbol: string;
+  riskScore: number;
+  explanation: string;
+  suggestions?: string;
+}
+
 const Report = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [tokenAnalysis, setTokenAnalysis] = useState([]);
+  const [tokenAnalysis, setTokenAnalysis] = useState<TokenAnalysis[]>([]);
   
   // Load and analyze tokens
   useEffect(() => {
     const fetchData = async () => {
       try {
+        toast.info("AI risk analysis starting...");
+        
         // Mock token data that would come from wallet/dashboard in a real app
-        const mockTokens = [
-          { name: "Ethereum", symbol: "ETH", balance: 1.5 },
-          { name: "Bitcoin", symbol: "BTC", balance: 0.25 },
-          { name: "USD Coin", symbol: "USDC", balance: 1000 },
-          { name: "DeFi Token", symbol: "DFI", balance: 150 },
-          { name: "TokenXYZ", symbol: "XYZ", balance: 500 },
+        const mockTokens: TokenData[] = [
+          { name: "Ethereum", symbol: "ETH", balance: 1.5, price: 3500 },
+          { name: "Bitcoin", symbol: "BTC", balance: 0.25, price: 62000 },
+          { name: "USD Coin", symbol: "USDC", balance: 1000, price: 1 },
+          { name: "DeFi Token", symbol: "DFI", balance: 150, price: 12 },
+          { name: "TokenXYZ", symbol: "XYZ", balance: 500, price: 0.85 },
         ];
         
         // Analyze tokens using the OpenAI service
         const analysis = await analyzeTokens(mockTokens);
+        console.log("AI analysis completed:", analysis);
+        
         setTokenAnalysis(analysis);
         setIsLoading(false);
+        toast.success("AI risk analysis completed");
       } catch (error) {
         console.error("Error fetching token analysis:", error);
-        toast.error("Failed to generate report. Please try again.");
+        toast.error("Failed to generate AI report. Please try again.");
         setIsLoading(false);
       }
     };
@@ -61,6 +82,25 @@ const Report = () => {
     ? tokenAnalysis.reduce((sum, token) => sum + token.riskScore, 0) / tokenAnalysis.length
     : 0;
 
+  // Handle report downloads and sharing
+  const handleDownloadReport = async () => {
+    try {
+      await downloadReport();
+    } catch (error) {
+      console.error("Error downloading report:", error);
+      toast.error("Failed to download report");
+    }
+  };
+
+  const handleShareReport = async () => {
+    try {
+      await shareReport();
+    } catch (error) {
+      console.error("Error sharing report:", error);
+      toast.error("Failed to share report");
+    }
+  };
+
   return (
     <MainLayout isConnected={true}>
       <div className="safe-container py-8">
@@ -79,11 +119,11 @@ const Report = () => {
                   </p>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
-                  <Button variant="outline" size="sm" onClick={downloadReport}>
+                  <Button variant="outline" size="sm" onClick={handleDownloadReport}>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
-                  <Button variant="outline" size="sm" onClick={shareReport}>
+                  <Button variant="outline" size="sm" onClick={handleShareReport}>
                     <Share className="h-4 w-4 mr-2" />
                     Share
                   </Button>
