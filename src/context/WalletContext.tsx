@@ -1,10 +1,9 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi';
-import { InjectedConnector } from 'wagmi/connectors/injected';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAccount, useConnect, useDisconnect, useBalance, useChainId } from 'wagmi';
+import { openConnectModal } from '@reown/appkit';
 
 interface WalletContextType {
   address: string | undefined;
@@ -31,60 +30,14 @@ export const useWallet = () => useContext(WalletContext);
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [balance, setBalance] = useState('0');
   const [isConnecting, setIsConnecting] = useState(false);
-  const [chainId, setChainId] = useState<number | undefined>(undefined);
   const isMobile = useIsMobile();
   
-  // The useAccount hook returns different properties in wagmi v1.x
-  const { address, isConnected, connector } = useAccount({
-    onConnect: ({ address, connector, isReconnected }) => {
-      // Get chain ID from the connector if available
-      if (connector) {
-        connector.getChainId().then(id => {
-          setChainId(id);
-        }).catch(error => {
-          console.error("Error getting chain ID:", error);
-        });
-      }
-      
-      // Show success message only if it's not a reconnect
-      if (!isReconnected) {
-        toast.success("Wallet connected successfully!");
-      }
-      setIsConnecting(false);
-    },
-    onDisconnect() {
-      setChainId(undefined);
-    },
-  });
-  
-  // Create a WalletConnect connector instance
-  const walletConnectConnector = new WalletConnectConnector({
-    options: {
-      projectId: "de82e26b2c8509a6f4f437ebb8171276", // Using the same projectId as in App.tsx
-      showQrModal: true,
-    }
-  });
-
-  const { connect, error: connectError } = useConnect({
-    connector: isMobile ? walletConnectConnector : new InjectedConnector(),
-    onSettled(data, error) {
-      setIsConnecting(false);
-      if (error) {
-        console.error('Connection error:', error);
-        toast.error("Failed to connect wallet. Please try again.");
-      }
-    }
-  });
-  
-  const { disconnect } = useDisconnect({
-    onSuccess() {
-      toast.success("Wallet disconnected");
-    },
-  });
-
+  // Using wagmi v2 hooks
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { disconnect } = useDisconnect();
   const { data: balanceData } = useBalance({
     address,
-    watch: true,
   });
 
   useEffect(() => {
@@ -94,35 +47,19 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [balanceData]);
 
-  // Update chainId when connector changes
-  useEffect(() => {
-    if (connector && isConnected) {
-      connector.getChainId().then(id => {
-        setChainId(id);
-      }).catch(error => {
-        console.error("Error getting chain ID:", error);
-      });
-    } else {
-      setChainId(undefined);
-    }
-  }, [connector, isConnected]);
-
-  // Show connection errors through toast
-  useEffect(() => {
-    if (connectError) {
-      console.log("Connection error detected:", connectError);
-      toast.error("Failed to connect wallet. Please try again.");
-    }
-  }, [connectError]);
-
   const connectWallet = async () => {
     if (isConnecting) return; // Prevent multiple connection attempts
     
     setIsConnecting(true);
     try {
-      console.log("Attempting to connect wallet...", isMobile ? "using WalletConnect" : "using injected provider");
+      console.log("Attempting to connect wallet...");
       
-      await connect();
+      // Use the Reown AppKit modal for connecting
+      await openConnectModal();
+      
+      // The modal will handle the connection process
+      // We just need to set isConnecting to false
+      setIsConnecting(false);
     } catch (error) {
       console.error("Error in connectWallet:", error);
       setIsConnecting(false);
@@ -133,11 +70,19 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const disconnectWallet = () => {
     try {
       disconnect();
+      toast.success("Wallet disconnected");
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
       toast.error("Failed to disconnect wallet");
     }
   };
+
+  // Show success message when wallet connects
+  useEffect(() => {
+    if (isConnected && address) {
+      toast.success("Wallet connected successfully!");
+    }
+  }, [isConnected, address]);
 
   return (
     <WalletContext.Provider

@@ -4,11 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
-import { EthereumClient, w3mConnectors, w3mProvider } from "@web3modal/ethereum";
-import { Web3Modal } from "@web3modal/react";
 import { WalletProvider } from "./context/WalletContext";
+import { createReownAppKit } from '@reown/appkit';
+import { http, createConfig } from 'wagmi';
+import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
 
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -20,47 +19,54 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
-// Web3Modal and Wagmi setup
-const chains = [mainnet, polygon, arbitrum, optimism];
-const projectId = "de82e26b2c8509a6f4f437ebb8171276"; // Demo project ID
+// Reown AppKit setup
+const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided project ID
 
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains }),
-  publicClient
+export const config = createConfig({
+  chains: [mainnet, polygon, arbitrum, optimism],
+  transports: {
+    [mainnet.id]: http(),
+    [polygon.id]: http(),
+    [arbitrum.id]: http(),
+    [optimism.id]: http(),
+  },
 });
 
-const ethereumClient = new EthereumClient(wagmiConfig, chains);
+// Initialize Reown AppKit
+createReownAppKit({
+  projectId,
+  wagmiConfig: config,
+  chains: [mainnet, polygon, arbitrum, optimism],
+  themeVariables: {
+    '--w3m-accent': '#5E9C76', // Match sage-500 color
+  },
+});
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <>
-    <WagmiConfig config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <WalletProvider>
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/report" element={<Report />} />
-                <Route path="/compare" element={<Compare />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/disclaimer" element={<Disclaimer />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </WalletProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </WagmiConfig>
-    <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <WalletProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/report" element={<Report />} />
+              <Route path="/compare" element={<Compare />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/disclaimer" element={<Disclaimer />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </WalletProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   </>
 );
 
