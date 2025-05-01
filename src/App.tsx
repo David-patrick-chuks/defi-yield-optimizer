@@ -8,7 +8,7 @@ import { WalletProvider } from "./context/WalletContext";
 import { createAppKit } from "@reown/appkit";
 import { createConfig, configureChains, WagmiConfig } from "wagmi";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { publicProvider } from "wagmi/providers/public";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc"; // ✅ updated
 import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
 
 import Index from "./pages/Index";
@@ -24,10 +24,16 @@ import NotFound from "./pages/NotFound";
 // 🆔 Reown Project ID
 const projectId = "b416daa29430acf394a8a82ba73e007f";
 
-// ✅ Wagmi + Chains Setup
+// ✅ Wagmi + Chains Setup (fixed with jsonRpcProvider)
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, polygon, arbitrum, optimism],
-  [publicProvider()]
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: chain.rpcUrls.default.http[0], // ✅ fix for 'http' undefined
+      }),
+    }),
+  ]
 );
 
 const connectors = [
