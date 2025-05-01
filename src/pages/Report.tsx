@@ -1,0 +1,192 @@
+
+import { useState, useEffect } from 'react';
+import MainLayout from '@/components/layout/MainLayout';
+import LoadingAI from '@/components/ui/LoadingAI';
+import TokenRiskCard from '@/components/ui/TokenRiskCard';
+import { Button } from '@/components/ui/button';
+import { Download, Share } from 'lucide-react';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
+
+const Report = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Mock token analysis data
+  const tokenAnalysis = [
+    {
+      name: "Ethereum",
+      symbol: "ETH",
+      riskScore: 2.5,
+      explanation: "Ethereum has high liquidity, market capitalization, and developer adoption. The risk is relatively low due to its established status in the market.",
+    },
+    {
+      name: "Bitcoin",
+      symbol: "BTC",
+      riskScore: 2.1,
+      explanation: "Bitcoin is the most established cryptocurrency with high market cap and liquidity. It generally presents lower risk compared to other digital assets.",
+    },
+    {
+      name: "USD Coin",
+      symbol: "USDC",
+      riskScore: 1.8,
+      explanation: "As a regulated stablecoin, USDC has low volatility and is backed by USD reserves. Regular audits provide additional security.",
+    },
+    {
+      name: "DeFi Token",
+      symbol: "DFI",
+      riskScore: 5.7,
+      explanation: "This token has moderate risk due to its mid-range market cap and volatility. While the project has solid fundamentals, it's more susceptible to market fluctuations.",
+      suggestions: "Consider allocating more to established DeFi protocols like Aave or Compound for reduced risk exposure.",
+    },
+    {
+      name: "TokenXYZ",
+      symbol: "XYZ",
+      riskScore: 8.7,
+      explanation: "This token presents high risk due to low liquidity, high price volatility, and limited track record. The project has promising technology but significant uncertainty.",
+      suggestions: "Consider reducing exposure to this token and reallocating to more established assets with similar use cases but better risk profiles.",
+    },
+  ];
+  
+  const chartData = tokenAnalysis.map(token => ({
+    name: token.symbol,
+    riskScore: token.riskScore,
+    fill: token.riskScore <= 3 ? '#68D391' : 
+          token.riskScore <= 6 ? '#F6E05E' : 
+          '#F56565'
+  }));
+  
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const overallRisk = tokenAnalysis.reduce((sum, token) => sum + token.riskScore, 0) / tokenAnalysis.length;
+
+  return (
+    <MainLayout isConnected={true}>
+      <div className="safe-container py-8">
+        {isLoading ? (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 min-h-[70vh] flex items-center justify-center">
+            <LoadingAI />
+          </div>
+        ) : (
+          <>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-6">
+              <div className="flex flex-col md:flex-row justify-between mb-8">
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-800 mb-2">AI Risk Analysis</h1>
+                  <p className="text-slate-600">
+                    Generated on {new Date().toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex gap-3 mt-4 md:mt-0">
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Share className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="mb-8">
+                <h2 className="text-lg font-medium text-slate-800 mb-4">Portfolio Risk Summary</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-slate-50 p-5 rounded-lg">
+                    <p className="text-sm text-slate-500 mb-1">Average Risk Score</p>
+                    <div className="flex items-baseline gap-2">
+                      <h3 className="text-3xl font-bold">{overallRisk.toFixed(1)}</h3>
+                      <span className="text-sm font-medium px-2 py-0.5 rounded-full"
+                        style={{ 
+                          backgroundColor: overallRisk <= 3 ? '#68D391' : 
+                                          overallRisk <= 6 ? '#F6E05E' : 
+                                          '#F56565',
+                          color: overallRisk <= 3 ? '#276749' : 
+                                 overallRisk <= 6 ? '#975A16' : 
+                                 '#9B2C2C' 
+                        }}>
+                        {overallRisk <= 3 ? 'Low' : overallRisk <= 6 ? 'Moderate' : 'High'} Risk
+                      </span>
+                    </div>
+                    <p className="text-slate-600 mt-3 text-sm">
+                      Your portfolio has an {overallRisk <= 3 ? 'low' : overallRisk <= 6 ? 'moderate' : 'high'} overall risk score. 
+                      {overallRisk > 5 ? ' Consider rebalancing to reduce exposure to higher risk assets.' : ' Your current asset allocation is well-diversified.'}
+                    </p>
+                  </div>
+                  
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={chartData}
+                        margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" />
+                        <YAxis domain={[0, 10]} />
+                        <Tooltip 
+                          formatter={(value) => [`Risk Score: ${value}`, 'Risk Level']}
+                          labelStyle={{ color: '#1a202c' }}
+                          contentStyle={{ backgroundColor: 'white', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}
+                        />
+                        <Bar dataKey="riskScore" fill="#8884d8" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mb-6">
+              <h2 className="text-xl font-medium text-slate-800 mb-4">Individual Token Assessment</h2>
+              <div className="space-y-4">
+                {tokenAnalysis.map((token) => (
+                  <TokenRiskCard
+                    key={token.symbol}
+                    name={token.name}
+                    symbol={token.symbol}
+                    riskScore={token.riskScore}
+                    explanation={token.explanation}
+                    suggestions={token.suggestions}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            <div className="p-6 bg-sage-50 border border-sage-200 rounded-lg">
+              <div className="mb-3 font-medium text-sage-800">AI Risk Recommendations</div>
+              <ul className="space-y-2 text-sage-700">
+                <li className="flex gap-2">
+                  <span>•</span>
+                  <span>Consider reducing exposure to high-risk tokens (TokenXYZ) and reallocating to more established assets.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span>•</span>
+                  <span>Your stablecoin allocation provides good stability to your portfolio. Consider maintaining this balance.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span>•</span>
+                  <span>For moderate-risk DeFi exposure, explore established protocols with longer track records.</span>
+                </li>
+              </ul>
+            </div>
+          </>
+        )}
+      </div>
+    </MainLayout>
+  );
+};
+
+export default Report;
