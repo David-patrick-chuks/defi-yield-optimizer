@@ -17,6 +17,7 @@ import {
 import { downloadReport, shareReport } from '@/utils/reportUtils';
 import { analyzeTokens } from '@/services/openai';
 import { toast } from '@/components/ui/sonner';
+import { useWallet } from '@/context/WalletContext';
 
 // Define interfaces for token data
 interface TokenData {
@@ -37,24 +38,62 @@ interface TokenAnalysis {
 const Report = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenAnalysis, setTokenAnalysis] = useState<TokenAnalysis[]>([]);
+  const { isConnected, address, balance, chainId } = useWallet();
   
   // Load and analyze tokens
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (!isConnected || !address) {
+          toast.error("Please connect your wallet first");
+          setIsLoading(false);
+          return;
+        }
+        
         toast.info("AI risk analysis starting...");
         
-        // Mock token data that would come from wallet/dashboard in a real app
-        const mockTokens: TokenData[] = [
-          { name: "Ethereum", symbol: "ETH", balance: 1.5, price: 3500 },
-          { name: "Bitcoin", symbol: "BTC", balance: 0.25, price: 62000 },
-          { name: "USD Coin", symbol: "USDC", balance: 1000, price: 1 },
-          { name: "DeFi Token", symbol: "DFI", balance: 150, price: 12 },
-          { name: "TokenXYZ", symbol: "XYZ", balance: 500, price: 0.85 },
+        // Get real token data from connected wallet
+        // For now, we'll use the native token (ETH) from the wallet balance
+        // In a production app, we would fetch all tokens using an API like Moralis or Covalent
+        const realTokens: TokenData[] = [
+          { 
+            name: "Ethereum", 
+            symbol: "ETH", 
+            balance: parseFloat(balance), 
+            price: 3500 // Mock price for now, in real app would use price API
+          }
         ];
         
+        // Add placeholder for chain-specific tokens based on chainId
+        if (chainId) {
+          if (chainId === 137 || chainId === 80001) {
+            realTokens.push({ 
+              name: "Polygon", 
+              symbol: "MATIC", 
+              balance: 100, 
+              price: 0.8
+            });
+          } else if (chainId === 56) {
+            realTokens.push({ 
+              name: "BNB", 
+              symbol: "BNB", 
+              balance: 2, 
+              price: 570
+            });
+          } else if (chainId === 10 || chainId === 42161) {
+            realTokens.push({ 
+              name: "Layer 2 Token", 
+              symbol: "L2T", 
+              balance: 50, 
+              price: 2.5
+            });
+          }
+        }
+
+        console.log("Analyzing wallet tokens:", realTokens);
+        
         // Analyze tokens using the OpenAI service
-        const analysis = await analyzeTokens(mockTokens);
+        const analysis = await analyzeTokens(realTokens);
         console.log("AI analysis completed:", analysis);
         
         setTokenAnalysis(analysis);
@@ -68,7 +107,20 @@ const Report = () => {
     };
     
     fetchData();
-  }, []);
+  }, [isConnected, address, balance, chainId]);
+  
+  // Redirect to dashboard if not connected
+  useEffect(() => {
+    if (!isConnected && !isLoading) {
+      toast.error("Please connect your wallet to view the risk analysis");
+      // Add a small delay before redirecting
+      const timeout = setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 2000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [isConnected, isLoading]);
   
   const chartData = tokenAnalysis.map(token => ({
     name: token.symbol,
@@ -102,11 +154,19 @@ const Report = () => {
   };
 
   return (
-    <MainLayout isConnected={true}>
+    <MainLayout>
       <div className="safe-container py-8">
         {isLoading ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 min-h-[70vh] flex items-center justify-center">
             <LoadingAI />
+          </div>
+        ) : !isConnected ? (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 min-h-[50vh] flex flex-col items-center justify-center">
+            <h2 className="text-xl font-medium text-slate-800 mb-4">Wallet Connection Required</h2>
+            <p className="text-slate-600 mb-6">Please connect your wallet to analyze your portfolio.</p>
+            <Button onClick={() => window.location.href = '/dashboard'} className="gradient-bg-secondary">
+              Go to Dashboard
+            </Button>
           </div>
         ) : (
           <div id="report-content">
@@ -179,18 +239,24 @@ const Report = () => {
             
             <div className="mb-6">
               <h2 className="text-xl font-medium text-slate-800 mb-4">Individual Token Assessment</h2>
-              <div className="space-y-4">
-                {tokenAnalysis.map((token) => (
-                  <TokenRiskCard
-                    key={token.symbol}
-                    name={token.name}
-                    symbol={token.symbol}
-                    riskScore={token.riskScore}
-                    explanation={token.explanation}
-                    suggestions={token.suggestions}
-                  />
-                ))}
-              </div>
+              {tokenAnalysis.length > 0 ? (
+                <div className="space-y-4">
+                  {tokenAnalysis.map((token) => (
+                    <TokenRiskCard
+                      key={token.symbol}
+                      name={token.name}
+                      symbol={token.symbol}
+                      riskScore={token.riskScore}
+                      explanation={token.explanation}
+                      suggestions={token.suggestions}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-slate-50 p-6 rounded-lg text-center">
+                  <p className="text-slate-600">No tokens found in your wallet for analysis.</p>
+                </div>
+              )}
             </div>
             
             <div className="p-6 bg-sage-50 border border-sage-200 rounded-lg">
