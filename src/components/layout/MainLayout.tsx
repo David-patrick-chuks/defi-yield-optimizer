@@ -5,9 +5,10 @@ import Footer from './Footer';
 
 interface MainLayoutProps {
   children: ReactNode;
+  isConnected?: boolean; // Added optional isConnected prop
 }
 
-const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = ({ children, isConnected }: MainLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />

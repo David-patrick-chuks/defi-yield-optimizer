@@ -29,8 +29,22 @@ export const useWallet = () => useContext(WalletContext);
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [balance, setBalance] = useState('0');
   const [isConnecting, setIsConnecting] = useState(false);
+  const [chainId, setChainId] = useState<number | undefined>(undefined);
   
-  const { address, isConnected, chainId } = useAccount();
+  // The useAccount hook returns different properties in wagmi v1.x
+  const { address, isConnected, connector } = useAccount({
+    onConnect: ({ connector }) => {
+      // Get chain ID from the connector if available
+      if (connector) {
+        connector.getChainId().then(id => {
+          setChainId(id);
+        }).catch(error => {
+          console.error("Error getting chain ID:", error);
+        });
+      }
+    }
+  });
+  
   const { connect } = useConnect({
     connector: new InjectedConnector(),
     onSuccess() {
@@ -61,6 +75,19 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       setBalance(formattedBalance);
     }
   }, [balanceData]);
+
+  // Update chainId when connector changes
+  useEffect(() => {
+    if (connector && isConnected) {
+      connector.getChainId().then(id => {
+        setChainId(id);
+      }).catch(error => {
+        console.error("Error getting chain ID:", error);
+      });
+    } else {
+      setChainId(undefined);
+    }
+  }, [connector, isConnected]);
 
   const connectWallet = async () => {
     setIsConnecting(true);

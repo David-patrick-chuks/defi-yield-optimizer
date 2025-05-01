@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
 import { EthereumClient, w3mConnectors, w3mProvider } from "@web3modal/ethereum";
-import { Web3Modal } from "@web3modal/react";
+import { Web3Modal } from "@web3modal/react"; // Fixed import
 import { WalletProvider } from "./context/WalletContext";
 
 import Index from "./pages/Index";
