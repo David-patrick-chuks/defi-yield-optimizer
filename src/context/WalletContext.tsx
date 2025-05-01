@@ -60,8 +60,10 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log("Attempting to connect wallet...");
       
-      // Using the globally created AppKit instance to open the modal
+      // Debugging: Log AppKit instance
       const appkit = window.reownAppKit;
+      console.log("AppKit instance during connection:", appkit);
+
       if (appkit) {
         appkit.open();
       } else {
