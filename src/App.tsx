@@ -5,8 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
-import { createReownAppKit } from '@reown/appkit';
-import { http, createConfig } from 'wagmi';
+import { createAppKit } from '@reown/appkit';
+import { createConfig } from 'wagmi';
 import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
 
 import Index from "./pages/Index";
@@ -25,18 +25,17 @@ const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided pro
 export const config = createConfig({
   chains: [mainnet, polygon, arbitrum, optimism],
   transports: {
-    [mainnet.id]: http(),
-    [polygon.id]: http(),
-    [arbitrum.id]: http(),
-    [optimism.id]: http(),
+    [mainnet.id]: mainnet.transport(),
+    [polygon.id]: polygon.transport(),
+    [arbitrum.id]: arbitrum.transport(),
+    [optimism.id]: optimism.transport(),
   },
 });
 
 // Initialize Reown AppKit
-createReownAppKit({
+createAppKit({
   projectId,
   wagmiConfig: config,
-  chains: [mainnet, polygon, arbitrum, optimism],
   themeVariables: {
     '--w3m-accent': '#5E9C76', // Match sage-500 color
   },

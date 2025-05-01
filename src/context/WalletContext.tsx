@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAccount, useConnect, useDisconnect, useBalance, useChainId } from 'wagmi';
-import { openConnectModal } from '@reown/appkit';
+import { openWeb3Modal } from '@reown/appkit/modal';
 
 interface WalletContextType {
   address: string | undefined;
@@ -54,8 +54,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log("Attempting to connect wallet...");
       
-      // Use the Reown AppKit modal for connecting
-      await openConnectModal();
+      // Use Reown AppKit modal for connecting
+      await openWeb3Modal();
       
       // The modal will handle the connection process
       // We just need to set isConnecting to false
