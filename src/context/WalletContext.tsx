@@ -5,6 +5,12 @@ import { useAccount, useConnect, useDisconnect, useBalance, useChainId } from 'w
 // Import the appkit
 import { createAppKit } from '@reown/appkit';
 
+declare global {
+  interface Window {
+    reownAppKit?: AppKit;
+  }
+}
+
 interface WalletContextType {
   address: string | undefined;
   isConnected: boolean;
