@@ -30,6 +30,11 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [publicProvider()]
 );
 
+// Debugging: Log the chains and clients
+console.log("Configured Chains:", chains);
+console.log("Public Client:", publicClient);
+console.log("WebSocket Public Client:", webSocketPublicClient);
+
 const connectors = [
   new WalletConnectConnector({
     chains,
@@ -80,6 +85,9 @@ const appKitInstance = createAppKit({
     "--w3m-accent": "#5E9C76",
   },
 });
+
+// Debugging: Log the AppKit instance
+console.log("AppKit Instance:", appKitInstance);
 
 // ✅ Store AppKit instance globally
 if (typeof window !== "undefined") {
