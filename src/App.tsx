@@ -23,15 +23,16 @@ import NotFound from "./pages/NotFound";
 // Reown AppKit setup
 const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided project ID
 
-// Create a proper public client for wagmi
+// Create a proper public client for wagmi with correct type
 const publicClient = createPublicClient({
   chain: mainnet,
   transport: http()
 });
 
-// Create wagmi config with proper configuration
+// Create wagmi config with proper configuration using getPublicClient function
 export const config = createConfig({
-  publicClient,
+  // Use a function that returns the publicClient to match expected type
+  publicClient: () => publicClient,
   connectors: [],
 });
 
