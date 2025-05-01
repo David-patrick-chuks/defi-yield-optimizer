@@ -1,30 +1,67 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TokenCard from '@/components/ui/TokenCard';
 import { Button } from '@/components/ui/button';
 import { CircleArrowRight, Wallet, FileSearch } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useWallet } from '@/context/WalletContext';
+import { toast } from '@/components/ui/sonner';
+
+// Mock token data for demonstration
+const mockTokens = [
+  { name: "Ethereum", symbol: "ETH", balance: "3.24", value: "8,125.32" },
+  { name: "Bitcoin", symbol: "BTC", balance: "0.56", value: "18,975.42" },
+  { name: "USD Coin", symbol: "USDC", balance: "2,500.00", value: "2,500.00" },
+  { name: "DeFi Token", symbol: "DFI", balance: "450.75", value: "1,275.35" },
+  { name: "TokenXYZ", symbol: "XYZ", balance: "1,200.00", value: "240.00" },
+];
 
 const Dashboard = () => {
-  const [isConnected, setIsConnected] = useState(false);
+  const { isConnected, address, connectWallet, balance, chainId } = useWallet();
+  const [walletTokens, setWalletTokens] = useState(mockTokens);
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Mock wallet data
-  const walletAddress = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F";
-  const tokens = [
-    { name: "Ethereum", symbol: "ETH", balance: "3.24", value: "8,125.32" },
-    { name: "Bitcoin", symbol: "BTC", balance: "0.56", value: "18,975.42" },
-    { name: "USD Coin", symbol: "USDC", balance: "2,500.00", value: "2,500.00" },
-    { name: "DeFi Token", symbol: "DFI", balance: "450.75", value: "1,275.35" },
-    { name: "TokenXYZ", symbol: "XYZ", balance: "1,200.00", value: "240.00" },
-  ];
-  
-  const handleConnectWallet = () => {
-    setIsConnected(true);
+  // Function to fetch real token data when connected
+  const fetchTokenData = async () => {
+    if (!isConnected || !address) return;
+    
+    setIsLoading(true);
+    try {
+      // In a real implementation, this would call an API to get token balances
+      // For now, we'll just use the mock data with a delay to simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Add the native token (ETH) with real balance
+      const updatedTokens = [
+        { 
+          name: "Ethereum", 
+          symbol: "ETH", 
+          balance: balance, 
+          value: (parseFloat(balance) * 2500).toLocaleString() // Mocked price
+        },
+        ...mockTokens.slice(1)
+      ];
+      
+      setWalletTokens(updatedTokens);
+      toast.success("Portfolio data loaded");
+    } catch (error) {
+      console.error("Error fetching token data:", error);
+      toast.error("Failed to fetch token data");
+    } finally {
+      setIsLoading(false);
+    }
   };
-
+  
+  // Fetch token data when wallet connects
+  useEffect(() => {
+    if (isConnected) {
+      fetchTokenData();
+    }
+  }, [isConnected, address, balance]);
+  
   return (
-    <MainLayout isConnected={isConnected}>
+    <MainLayout>
       <div className="safe-container py-8">
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
           <h1 className="text-2xl font-bold text-slate-800 mb-6">Portfolio Dashboard</h1>
@@ -33,13 +70,13 @@ const Dashboard = () => {
             <>
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <div className="mb-4 md:mb-0">
-                  <p className="text-sm text-slate-500 mb-1">Connected Wallet</p>
+                  <p className="text-sm text-slate-500 mb-1">Connected Wallet {chainId && `(Chain ID: ${chainId})`}</p>
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center mr-2">
                       <Wallet className="h-4 w-4 text-slate-600" />
                     </div>
                     <p className="font-mono text-slate-800">
-                      {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
+                      {address && `${address.substring(0, 6)}...${address.substring(address.length - 4)}`}
                     </p>
                   </div>
                 </div>
@@ -54,10 +91,15 @@ const Dashboard = () => {
               
               <div className="mb-4">
                 <h2 className="text-xl font-medium text-slate-800 mb-4">Your Tokens</h2>
+                {isLoading && (
+                  <div className="text-center py-6 text-slate-500">
+                    Loading portfolio data...
+                  </div>
+                )}
               </div>
               
               <div className="space-y-3">
-                {tokens.map((token) => (
+                {!isLoading && walletTokens.map((token) => (
                   <TokenCard
                     key={token.symbol}
                     name={token.name}
@@ -91,7 +133,8 @@ const Dashboard = () => {
               <p className="text-slate-600 mb-6 max-w-md mx-auto">
                 Connect your cryptocurrency wallet to view your portfolio and analyze risks.
               </p>
-              <Button onClick={handleConnectWallet} className="gradient-bg-secondary">
+              <Button onClick={connectWallet} className="gradient-bg-secondary">
+                <Wallet className="h-4 w-4 mr-2" />
                 Connect Wallet
               </Button>
             </div>

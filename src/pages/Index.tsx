@@ -5,8 +5,11 @@ import FeatureCard from '@/components/ui/FeatureCard';
 import StepCard from '@/components/ui/StepCard';
 import { Shield, TrendingUp, FileSearch, Link, Wallet } from 'lucide-react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useWallet } from '@/context/WalletContext';
 
 const Index = () => {
+  const { connectWallet, isConnected, isConnecting } = useWallet();
+  
   return (
     <MainLayout>
       {/* Hero Section */}
@@ -22,8 +25,12 @@ const Index = () => {
                 make informed decisions, and protect your investments.
               </p>
               <div className="pt-4">
-                <Button className="gradient-bg-secondary text-white font-medium mr-4 px-6 py-5">
-                  Connect Wallet
+                <Button 
+                  className="gradient-bg-secondary text-white font-medium mr-4 px-6 py-5"
+                  onClick={connectWallet}
+                  disabled={isConnecting || isConnected}
+                >
+                  {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet"}
                 </Button>
                 <RouterLink to="/about">
                   <Button variant="outline" className="px-6 py-5">
@@ -206,8 +213,13 @@ const Index = () => {
             Connect your wallet now and get immediate AI-powered insights into your portfolio's risk profile.
           </p>
           <div>
-            <Button className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg">
-              Connect Wallet & Start Analyzing
+            <Button 
+              className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
+              onClick={connectWallet}
+              disabled={isConnecting || isConnected}
+            >
+              <Wallet className="h-5 w-5 mr-2" />
+              {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet & Start Analyzing"}
             </Button>
           </div>
         </div>

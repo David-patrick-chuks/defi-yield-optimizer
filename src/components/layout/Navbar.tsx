@@ -2,10 +2,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Menu, X } from 'lucide-react';
+import { Shield, Menu, X, Wallet } from 'lucide-react';
+import { useWallet } from '@/context/WalletContext';
 
-const Navbar = ({ isConnected = false }: { isConnected?: boolean }) => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isConnected, connectWallet, disconnectWallet, address, isConnecting } = useWallet();
+  
+  const handleWalletAction = () => {
+    if (isConnected) {
+      disconnectWallet();
+    } else {
+      connectWallet();
+    }
+  };
+
+  const formatAddress = (addr: string) => {
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+  };
   
   return (
     <nav className="py-4 border-b border-slate-200 bg-white/70 backdrop-blur-md sticky top-0 z-50">
@@ -25,11 +39,16 @@ const Navbar = ({ isConnected = false }: { isConnected?: boolean }) => {
             <Link to="/compare" className="text-slate-600 hover:text-slate-900">Compare</Link>
             <Link to="/about" className="text-slate-600 hover:text-slate-900">About</Link>
             
-            {isConnected ? (
-              <Button className="bg-sage-500 hover:bg-sage-600" size="sm">Connected</Button>
-            ) : (
-              <Button className="gradient-bg-secondary" size="sm">Connect Wallet</Button>
-            )}
+            <Button 
+              className={isConnected ? "bg-sage-500 hover:bg-sage-600" : "gradient-bg-secondary"} 
+              size="sm"
+              onClick={handleWalletAction}
+              disabled={isConnecting}
+            >
+              <Wallet className="h-4 w-4 mr-2" />
+              {isConnecting ? "Connecting..." : 
+               isConnected ? formatAddress(address || '') : "Connect Wallet"}
+            </Button>
           </div>
           
           {/* Mobile Menu Button */}
@@ -78,11 +97,16 @@ const Navbar = ({ isConnected = false }: { isConnected?: boolean }) => {
             </Link>
             
             <div className="pt-2 px-3">
-              {isConnected ? (
-                <Button className="w-full bg-sage-500 hover:bg-sage-600" size="sm">Connected</Button>
-              ) : (
-                <Button className="w-full gradient-bg-secondary" size="sm">Connect Wallet</Button>
-              )}
+              <Button 
+                className={`w-full ${isConnected ? "bg-sage-500 hover:bg-sage-600" : "gradient-bg-secondary"}`} 
+                size="sm"
+                onClick={handleWalletAction}
+                disabled={isConnecting}
+              >
+                <Wallet className="h-4 w-4 mr-2" />
+                {isConnecting ? "Connecting..." : 
+                 isConnected ? formatAddress(address || '') : "Connect Wallet"}
+              </Button>
             </div>
           </div>
         )}
