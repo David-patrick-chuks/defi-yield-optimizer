@@ -13,6 +13,7 @@ const Navbar = () => {
     if (isConnected) {
       disconnectWallet();
     } else {
+      console.log("Initiating wallet connection from navbar");
       connectWallet();
     }
   };

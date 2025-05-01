@@ -33,7 +33,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   
   // The useAccount hook returns different properties in wagmi v1.x
   const { address, isConnected, connector } = useAccount({
-    onConnect: ({ connector }) => {
+    onConnect: ({ address, connector, isReconnected }) => {
       // Get chain ID from the connector if available
       if (connector) {
         connector.getChainId().then(id => {
@@ -42,19 +42,26 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
           console.error("Error getting chain ID:", error);
         });
       }
-    }
-  });
-  
-  const { connect } = useConnect({
-    connector: new InjectedConnector(),
-    onSuccess() {
-      toast.success("Wallet connected successfully!");
+      
+      // Show success message only if it's not a reconnect
+      if (!isReconnected) {
+        toast.success("Wallet connected successfully!");
+      }
       setIsConnecting(false);
     },
-    onError(error) {
-      console.error('Connection error:', error);
-      toast.error("Failed to connect wallet. Please try again.");
+    onDisconnect() {
+      setChainId(undefined);
+    },
+  });
+  
+  const { connect, error: connectError } = useConnect({
+    connector: new InjectedConnector(),
+    onSettled(data, error) {
       setIsConnecting(false);
+      if (error) {
+        console.error('Connection error:', error);
+        toast.error("Failed to connect wallet. Please try again.");
+      }
     }
   });
   
@@ -89,13 +96,25 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [connector, isConnected]);
 
+  // Show connection errors through toast
+  useEffect(() => {
+    if (connectError) {
+      console.log("Connection error detected:", connectError);
+      toast.error("Failed to connect wallet. Please try again.");
+    }
+  }, [connectError]);
+
   const connectWallet = async () => {
+    if (isConnecting) return; // Prevent multiple connection attempts
+    
     setIsConnecting(true);
     try {
+      console.log("Attempting to connect wallet...");
       await connect();
     } catch (error) {
-      console.error("Error connecting wallet:", error);
+      console.error("Error in connectWallet:", error);
       setIsConnecting(false);
+      toast.error("Failed to connect wallet. Please try again.");
     }
   };
 
@@ -104,6 +123,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       disconnect();
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
+      toast.error("Failed to disconnect wallet");
     }
   };
 
