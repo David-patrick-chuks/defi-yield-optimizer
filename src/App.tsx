@@ -7,8 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 
 import { createAppKit } from "@reown/appkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { publicProvider } from "wagmi/providers/public";
+import { createClient, configureChains, WagmiConfig } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
 
@@ -25,16 +25,34 @@ import NotFound from "./pages/NotFound";
 // 🆔 Reown Project ID
 const projectId = "b416daa29430acf394a8a82ba73e007f";
 
-// ✅ Wagmi + Chains Setup
-const { chains, publicClient, webSocketPublicClient } = configureChains(
+// ✅ Wagmi + Chains Setup with jsonRpcProvider instead of publicProvider
+const { chains, provider, webSocketProvider } = configureChains(
   [mainnet, polygon, arbitrum, optimism],
-  [publicProvider()]
+  [
+    jsonRpcProvider({
+      rpc: (chain) => {
+        if (chain.id === mainnet.id) {
+          return { http: "https://eth-mainnet.g.alchemy.com/v2/demo" };
+        }
+        if (chain.id === polygon.id) {
+          return { http: "https://polygon-mainnet.g.alchemy.com/v2/demo" };
+        }
+        if (chain.id === arbitrum.id) {
+          return { http: "https://arb-mainnet.g.alchemy.com/v2/demo" };
+        }
+        if (chain.id === optimism.id) {
+          return { http: "https://opt-mainnet.g.alchemy.com/v2/demo" };
+        }
+        return null;
+      },
+    }),
+  ]
 );
 
 // Debugging: Log the chains and provider
 console.log("Configured Chains:", chains);
-console.log("Public Client:", publicClient);
-console.log("WebSocket Public Client:", webSocketPublicClient);
+console.log("Provider:", provider);
+console.log("WebSocket Provider:", webSocketProvider);
 
 const connectors = [
   new WalletConnectConnector({
@@ -46,11 +64,11 @@ const connectors = [
   }),
 ];
 
-const config = createConfig({
+const client = createClient({
   autoConnect: true,
   connectors,
-  publicClient,
-  webSocketPublicClient,
+  provider,
+  webSocketProvider,
 });
 
 // ✅ Initialize Reown AppKit and store in window
@@ -99,7 +117,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <WagmiConfig config={config}>
+    <WagmiConfig client={client}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <BrowserRouter>
