@@ -22,9 +22,8 @@ import NotFound from "./pages/NotFound";
 // Reown AppKit setup
 const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided project ID
 
-// Create wagmi config with proper chains
+// Create wagmi config with proper configuration
 export const config = createConfig({
-  chains: [mainnet, polygon, arbitrum, optimism],
   connectors: [],
 });
 
@@ -32,10 +31,22 @@ export const config = createConfig({
 createAppKit({
   projectId,
   networks: {
-    [mainnet.id]: {},
-    [polygon.id]: {},
-    [arbitrum.id]: {},
-    [optimism.id]: {}
+    [mainnet.id]: {
+      chainId: mainnet.id,
+      name: mainnet.name
+    },
+    [polygon.id]: {
+      chainId: polygon.id,
+      name: polygon.name
+    },
+    [arbitrum.id]: {
+      chainId: arbitrum.id,
+      name: arbitrum.name
+    },
+    [optimism.id]: {
+      chainId: optimism.id,
+      name: optimism.name
+    }
   },
   themeVariables: {
     '--w3m-accent': '#5E9C76', // Match sage-500 color
