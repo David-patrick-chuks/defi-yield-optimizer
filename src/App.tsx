@@ -6,9 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 import { createAppKit } from '@reown/appkit';
-import { createConfig } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
-import { createPublicClient, http } from 'viem';
 
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -23,16 +22,15 @@ import NotFound from "./pages/NotFound";
 // Reown AppKit setup
 const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided project ID
 
-// Create a proper public client for wagmi with correct type
-const publicClient = createPublicClient({
-  chain: mainnet,
-  transport: http()
-});
-
 // Create wagmi config with proper configuration
 export const config = createConfig({
-  // Implement a function that takes chainId config and returns the public client
-  publicClient: ({ chainId }) => publicClient,
+  chains: [mainnet, polygon, arbitrum, optimism],
+  transports: {
+    [mainnet.id]: http(),
+    [polygon.id]: http(),
+    [arbitrum.id]: http(),
+    [optimism.id]: http()
+  },
   connectors: [],
 });
 
