@@ -26,7 +26,6 @@ import NotFound from "./pages/NotFound";
 const projectId = "b416daa29430acf394a8a82ba73e007f";
 
 // ✅ Wagmi + Chains Setup
-// Using wagmi v1 configureChains API with publicProvider
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, polygon, arbitrum, optimism],
   [publicProvider()]
@@ -47,7 +46,6 @@ const connectors = [
   }),
 ];
 
-// Using the correct createConfig for wagmi v1
 const config = createConfig({
   autoConnect: true,
   connectors,
