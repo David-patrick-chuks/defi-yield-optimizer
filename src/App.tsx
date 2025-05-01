@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 import { createAppKit } from '@reown/appkit';
-import { createConfig, http } from 'wagmi';
+import { createConfig } from 'wagmi';
+import { http } from 'viem'; // Import http from viem, not wagmi
 import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
 
 import Index from "./pages/Index";
@@ -24,13 +25,7 @@ const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided pro
 
 // Create wagmi config with proper configuration
 export const config = createConfig({
-  chains: [mainnet, polygon, arbitrum, optimism],
-  transports: {
-    [mainnet.id]: http(),
-    [polygon.id]: http(),
-    [arbitrum.id]: http(),
-    [optimism.id]: http()
-  },
+  // Use correct properties for wagmi v1.4.12
   connectors: [],
 });
 
