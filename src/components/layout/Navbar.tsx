@@ -5,18 +5,33 @@ import { Button } from '@/components/ui/button';
 import { Shield, Menu, X, Wallet } from 'lucide-react';
 import { useWallet } from '@/context/WalletContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isConnected, connectWallet, disconnectWallet, address, isConnecting } = useWallet();
+  const [showDialog, setShowDialog] = useState(false);
+  const { 
+    isConnected, 
+    connectWallet, 
+    connectMetaMask,
+    disconnectWallet, 
+    address, 
+    isConnecting,
+    isMetaMaskInstalled
+  } = useWallet();
   const isMobile = useIsMobile();
   
   const handleWalletAction = () => {
     if (isConnected) {
       disconnectWallet();
     } else {
-      console.log("Initiating wallet connection from navbar", isMobile ? "using WalletConnect" : "using injected provider");
-      connectWallet();
+      setShowDialog(true);
     }
   };
 
@@ -42,16 +57,54 @@ const Navbar = () => {
             <Link to="/compare" className="text-slate-600 hover:text-slate-900">Compare</Link>
             <Link to="/about" className="text-slate-600 hover:text-slate-900">About</Link>
             
-            <Button 
-              className={isConnected ? "bg-sage-500 hover:bg-sage-600" : "gradient-bg-secondary"} 
-              size="sm"
-              onClick={handleWalletAction}
-              disabled={isConnecting}
-            >
-              <Wallet className="h-4 w-4 mr-2" />
-              {isConnecting ? "Connecting..." : 
-               isConnected ? formatAddress(address || '') : "Connect Wallet"}
-            </Button>
+            <Dialog open={showDialog} onOpenChange={setShowDialog}>
+              <DialogTrigger asChild>
+                <Button 
+                  className={isConnected ? "bg-sage-500 hover:bg-sage-600" : "gradient-bg-secondary"} 
+                  size="sm"
+                  onClick={handleWalletAction}
+                  disabled={isConnecting}
+                >
+                  <Wallet className="h-4 w-4 mr-2" />
+                  {isConnecting ? "Connecting..." : 
+                   isConnected ? formatAddress(address || '') : "Connect Wallet"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Connect Wallet</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Button 
+                    onClick={() => {
+                      connectWallet();
+                      setShowDialog(false);
+                    }}
+                    className="w-full gradient-bg-secondary"
+                  >
+                    <Wallet className="h-4 w-4 mr-2" />
+                    Choose from available wallets
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => {
+                      connectMetaMask();
+                      setShowDialog(false);
+                    }}
+                    className="w-full bg-orange-500 hover:bg-orange-600"
+                    disabled={!isMetaMaskInstalled}
+                  >
+                    Connect MetaMask directly
+                  </Button>
+                  
+                  {!isMetaMaskInstalled && (
+                    <p className="text-sm text-slate-500 text-center">
+                      MetaMask not detected. Please install it first.
+                    </p>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
           
           {/* Mobile Menu Button */}
@@ -104,15 +157,25 @@ const Navbar = () => {
                 className={`w-full ${isConnected ? "bg-sage-500 hover:bg-sage-600" : "gradient-bg-secondary"}`} 
                 size="sm"
                 onClick={() => {
-                  handleWalletAction();
+                  if (isConnected) {
+                    disconnectWallet();
+                  } else {
+                    connectMetaMask();  // Direct MetaMask connection for mobile
+                  }
                   setIsOpen(false);
                 }}
-                disabled={isConnecting}
+                disabled={isConnecting || (!isConnected && !isMetaMaskInstalled)}
               >
                 <Wallet className="h-4 w-4 mr-2" />
                 {isConnecting ? "Connecting..." : 
-                 isConnected ? formatAddress(address || '') : "Connect Wallet"}
+                 isConnected ? formatAddress(address || '') : "Connect MetaMask"}
               </Button>
+              
+              {!isMetaMaskInstalled && !isConnected && (
+                <p className="text-xs text-slate-500 text-center mt-2">
+                  MetaMask not detected
+                </p>
+              )}
             </div>
           </div>
         )}

@@ -10,6 +10,7 @@ import { createAppKit } from "@reown/appkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { InjectedConnector } from "wagmi/connectors/injected";
 import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
 
 import Index from "./pages/Index";
@@ -54,12 +55,20 @@ console.log("Configured Chains:", chains);
 console.log("Public Client:", publicClient);
 console.log("WebSocket Public Client:", webSocketPublicClient);
 
+// Add both WalletConnect and Injected (MetaMask) connectors
 const connectors = [
   new WalletConnectConnector({
     chains,
     options: {
       projectId,
       showQrModal: true,
+    },
+  }),
+  new InjectedConnector({
+    chains,
+    options: {
+      name: 'MetaMask',
+      shimDisconnect: true,
     },
   }),
 ];

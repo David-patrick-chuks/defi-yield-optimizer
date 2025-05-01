@@ -1,4 +1,3 @@
-
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import FeatureCard from '@/components/ui/FeatureCard';
@@ -6,9 +5,22 @@ import StepCard from '@/components/ui/StepCard';
 import { Shield, TrendingUp, FileSearch, Link, Wallet } from 'lucide-react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useWallet } from '@/context/WalletContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from 'react';
 
 const Index = () => {
-  const { connectWallet, isConnected, isConnecting } = useWallet();
+  const { connectWallet, connectMetaMask, isConnected, isConnecting, isMetaMaskInstalled } = useWallet();
+  const [showDialog, setShowDialog] = useState(false);
+  
+  const handleConnectClick = () => {
+    if (isConnected) return;
+    setShowDialog(true);
+  };
   
   return (
     <MainLayout>
@@ -25,13 +37,51 @@ const Index = () => {
                 make informed decisions, and protect your investments.
               </p>
               <div className="pt-4">
-                <Button 
-                  className="gradient-bg-secondary text-white font-medium mr-4 px-6 py-5"
-                  onClick={connectWallet}
-                  disabled={isConnecting || isConnected}
-                >
-                  {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet"}
-                </Button>
+                <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                  <Button 
+                    className="gradient-bg-secondary text-white font-medium mr-4 px-6 py-5"
+                    onClick={handleConnectClick}
+                    disabled={isConnecting || isConnected}
+                  >
+                    {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet"}
+                  </Button>
+                  
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Connect Wallet</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <Button 
+                        onClick={() => {
+                          connectWallet();
+                          setShowDialog(false);
+                        }}
+                        className="w-full gradient-bg-secondary"
+                      >
+                        <Wallet className="h-4 w-4 mr-2" />
+                        Choose from available wallets
+                      </Button>
+                      
+                      <Button 
+                        onClick={() => {
+                          connectMetaMask();
+                          setShowDialog(false);
+                        }}
+                        className="w-full bg-orange-500 hover:bg-orange-600"
+                        disabled={!isMetaMaskInstalled}
+                      >
+                        Connect MetaMask directly
+                      </Button>
+                      
+                      {!isMetaMaskInstalled && (
+                        <p className="text-sm text-slate-500 text-center">
+                          MetaMask not detected. Please install it first.
+                        </p>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                
                 <RouterLink to="/about">
                   <Button variant="outline" className="px-6 py-5">
                     Learn More
@@ -213,14 +263,51 @@ const Index = () => {
             Connect your wallet now and get immediate AI-powered insights into your portfolio's risk profile.
           </p>
           <div>
-            <Button 
-              className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
-              onClick={connectWallet}
-              disabled={isConnecting || isConnected}
-            >
-              <Wallet className="h-5 w-5 mr-2" />
-              {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet & Start Analyzing"}
-            </Button>
+            <Dialog open={showDialog} onOpenChange={setShowDialog}>
+              <Button 
+                className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
+                onClick={handleConnectClick}
+                disabled={isConnecting || isConnected}
+              >
+                <Wallet className="h-5 w-5 mr-2" />
+                {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet & Start Analyzing"}
+              </Button>
+              
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Connect Wallet</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Button 
+                    onClick={() => {
+                      connectWallet();
+                      setShowDialog(false);
+                    }}
+                    className="w-full gradient-bg-secondary"
+                  >
+                    <Wallet className="h-4 w-4 mr-2" />
+                    Choose from available wallets
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => {
+                      connectMetaMask();
+                      setShowDialog(false);
+                    }}
+                    className="w-full bg-orange-500 hover:bg-orange-600"
+                    disabled={!isMetaMaskInstalled}
+                  >
+                    Connect MetaMask directly
+                  </Button>
+                  
+                  {!isMetaMaskInstalled && (
+                    <p className="text-sm text-slate-500 text-center">
+                      MetaMask not detected. Please install it first.
+                    </p>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>
