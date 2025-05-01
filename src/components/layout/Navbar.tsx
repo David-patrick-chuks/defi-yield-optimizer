@@ -15,7 +15,7 @@ const Navbar = () => {
     if (isConnected) {
       disconnectWallet();
     } else {
-      console.log("Initiating wallet connection from navbar", isMobile ? "on mobile" : "on desktop");
+      console.log("Initiating wallet connection from navbar", isMobile ? "using WalletConnect" : "using injected provider");
       connectWallet();
     }
   };
