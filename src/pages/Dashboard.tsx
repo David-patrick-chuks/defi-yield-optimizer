@@ -7,19 +7,20 @@ import { CircleArrowRight, Wallet, FileSearch } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useWallet } from '@/context/WalletContext';
 import { toast } from '@/components/ui/sonner';
+import { SupportBot } from '@/components/ui/support-bot';
 
-// Mock token data for demonstration
-const mockTokens = [
-  { name: "Ethereum", symbol: "ETH", balance: "3.24", value: "8,125.32" },
-  { name: "Bitcoin", symbol: "BTC", balance: "0.56", value: "18,975.42" },
-  { name: "USD Coin", symbol: "USDC", balance: "2,500.00", value: "2,500.00" },
-  { name: "DeFi Token", symbol: "DFI", balance: "450.75", value: "1,275.35" },
-  { name: "TokenXYZ", symbol: "XYZ", balance: "1,200.00", value: "240.00" },
-];
+// Define interface for our token data
+interface TokenData {
+  name: string;
+  symbol: string;
+  balance: string;
+  value: string;
+  logoUrl?: string;
+}
 
 const Dashboard = () => {
   const { isConnected, address, connectWallet, balance, chainId } = useWallet();
-  const [walletTokens, setWalletTokens] = useState(mockTokens);
+  const [walletTokens, setWalletTokens] = useState<TokenData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
   // Function to fetch real token data when connected
@@ -28,22 +29,23 @@ const Dashboard = () => {
     
     setIsLoading(true);
     try {
-      // In a real implementation, this would call an API to get token balances
-      // For now, we'll just use the mock data with a delay to simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Use Moralis API to get token balances for the connected address
+      const chain = chainId ? chainId.toString() : '1'; // Default to Ethereum mainnet
       
-      // Add the native token (ETH) with real balance
-      const updatedTokens = [
-        { 
-          name: "Ethereum", 
-          symbol: "ETH", 
-          balance: balance, 
-          value: (parseFloat(balance) * 2500).toLocaleString() // Mocked price
-        },
-        ...mockTokens.slice(1)
-      ];
+      // For native token (ETH), we use the balance from WalletContext
+      const nativeToken = { 
+        name: "Ethereum", 
+        symbol: "ETH", 
+        balance: balance, 
+        value: (parseFloat(balance) * 2500).toLocaleString() // Mocked price for demo
+      };
       
-      setWalletTokens(updatedTokens);
+      // Fetch ERC20 tokens
+      // In a production app, call an API like Moralis or Alchemy for a complete list
+      // For now, we'll just use the native token
+      const tokens: TokenData[] = [nativeToken];
+      
+      setWalletTokens(tokens);
       toast.success("Portfolio data loaded");
     } catch (error) {
       console.error("Error fetching token data:", error);
@@ -57,6 +59,8 @@ const Dashboard = () => {
   useEffect(() => {
     if (isConnected) {
       fetchTokenData();
+    } else {
+      setWalletTokens([]);
     }
   }, [isConnected, address, balance]);
   
@@ -99,16 +103,23 @@ const Dashboard = () => {
               </div>
               
               <div className="space-y-3">
-                {!isLoading && walletTokens.map((token) => (
-                  <TokenCard
-                    key={token.symbol}
-                    name={token.name}
-                    symbol={token.symbol}
-                    balance={token.balance}
-                    value={token.value}
-                    onClick={() => {}}
-                  />
-                ))}
+                {!isLoading && walletTokens.length > 0 ? (
+                  walletTokens.map((token) => (
+                    <TokenCard
+                      key={token.symbol}
+                      name={token.name}
+                      symbol={token.symbol}
+                      balance={token.balance}
+                      value={token.value}
+                      logoUrl={token.logoUrl}
+                      onClick={() => {}}
+                    />
+                  ))
+                ) : !isLoading && (
+                  <div className="text-center py-6 text-slate-500">
+                    No tokens found in your wallet
+                  </div>
+                )}
               </div>
               
               <div className="mt-8 flex flex-col md:flex-row gap-4">
@@ -160,6 +171,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      
+      {/* Add Support Bot Component */}
+      <SupportBot />
     </MainLayout>
   );
 };
