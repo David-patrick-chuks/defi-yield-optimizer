@@ -10,6 +10,8 @@ import Report from "./pages/Report";
 import Compare from "./pages/Compare";
 import About from "./pages/About";
 import Disclaimer from "./pages/Disclaimer";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/compare" element={<Compare />} />
           <Route path="/about" element={<About />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

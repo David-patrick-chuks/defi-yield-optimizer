@@ -14,45 +14,40 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
+import { downloadReport, shareReport } from '@/utils/reportUtils';
+import { analyzeTokens } from '@/services/openai';
+import { toast } from '@/components/ui/sonner';
 
 const Report = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [tokenAnalysis, setTokenAnalysis] = useState([]);
   
-  // Mock token analysis data
-  const tokenAnalysis = [
-    {
-      name: "Ethereum",
-      symbol: "ETH",
-      riskScore: 2.5,
-      explanation: "Ethereum has high liquidity, market capitalization, and developer adoption. The risk is relatively low due to its established status in the market.",
-    },
-    {
-      name: "Bitcoin",
-      symbol: "BTC",
-      riskScore: 2.1,
-      explanation: "Bitcoin is the most established cryptocurrency with high market cap and liquidity. It generally presents lower risk compared to other digital assets.",
-    },
-    {
-      name: "USD Coin",
-      symbol: "USDC",
-      riskScore: 1.8,
-      explanation: "As a regulated stablecoin, USDC has low volatility and is backed by USD reserves. Regular audits provide additional security.",
-    },
-    {
-      name: "DeFi Token",
-      symbol: "DFI",
-      riskScore: 5.7,
-      explanation: "This token has moderate risk due to its mid-range market cap and volatility. While the project has solid fundamentals, it's more susceptible to market fluctuations.",
-      suggestions: "Consider allocating more to established DeFi protocols like Aave or Compound for reduced risk exposure.",
-    },
-    {
-      name: "TokenXYZ",
-      symbol: "XYZ",
-      riskScore: 8.7,
-      explanation: "This token presents high risk due to low liquidity, high price volatility, and limited track record. The project has promising technology but significant uncertainty.",
-      suggestions: "Consider reducing exposure to this token and reallocating to more established assets with similar use cases but better risk profiles.",
-    },
-  ];
+  // Load and analyze tokens
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Mock token data that would come from wallet/dashboard in a real app
+        const mockTokens = [
+          { name: "Ethereum", symbol: "ETH", balance: 1.5 },
+          { name: "Bitcoin", symbol: "BTC", balance: 0.25 },
+          { name: "USD Coin", symbol: "USDC", balance: 1000 },
+          { name: "DeFi Token", symbol: "DFI", balance: 150 },
+          { name: "TokenXYZ", symbol: "XYZ", balance: 500 },
+        ];
+        
+        // Analyze tokens using the OpenAI service
+        const analysis = await analyzeTokens(mockTokens);
+        setTokenAnalysis(analysis);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching token analysis:", error);
+        toast.error("Failed to generate report. Please try again.");
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
   
   const chartData = tokenAnalysis.map(token => ({
     name: token.symbol,
@@ -62,16 +57,9 @@ const Report = () => {
           '#F56565'
   }));
   
-  // Simulate loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
-  const overallRisk = tokenAnalysis.reduce((sum, token) => sum + token.riskScore, 0) / tokenAnalysis.length;
+  const overallRisk = tokenAnalysis.length > 0 
+    ? tokenAnalysis.reduce((sum, token) => sum + token.riskScore, 0) / tokenAnalysis.length
+    : 0;
 
   return (
     <MainLayout isConnected={true}>
@@ -81,7 +69,7 @@ const Report = () => {
             <LoadingAI />
           </div>
         ) : (
-          <>
+          <div id="report-content">
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-6">
               <div className="flex flex-col md:flex-row justify-between mb-8">
                 <div>
@@ -91,11 +79,11 @@ const Report = () => {
                   </p>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={downloadReport}>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={shareReport}>
                     <Share className="h-4 w-4 mr-2" />
                     Share
                   </Button>
@@ -170,7 +158,7 @@ const Report = () => {
               <ul className="space-y-2 text-sage-700">
                 <li className="flex gap-2">
                   <span>•</span>
-                  <span>Consider reducing exposure to high-risk tokens (TokenXYZ) and reallocating to more established assets.</span>
+                  <span>Consider reducing exposure to high-risk tokens and reallocating to more established assets.</span>
                 </li>
                 <li className="flex gap-2">
                   <span>•</span>
@@ -182,7 +170,7 @@ const Report = () => {
                 </li>
               </ul>
             </div>
-          </>
+          </div>
         )}
       </div>
     </MainLayout>
