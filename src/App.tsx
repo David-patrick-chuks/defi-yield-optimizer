@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 
 import { createAppKit } from "@reown/appkit";
-import { createClient, configureChains, WagmiConfig } from "wagmi";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
@@ -26,7 +26,7 @@ import NotFound from "./pages/NotFound";
 const projectId = "b416daa29430acf394a8a82ba73e007f";
 
 // ✅ Wagmi + Chains Setup with jsonRpcProvider instead of publicProvider
-const { chains, provider, webSocketProvider } = configureChains(
+const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, polygon, arbitrum, optimism],
   [
     jsonRpcProvider({
@@ -51,8 +51,8 @@ const { chains, provider, webSocketProvider } = configureChains(
 
 // Debugging: Log the chains and provider
 console.log("Configured Chains:", chains);
-console.log("Provider:", provider);
-console.log("WebSocket Provider:", webSocketProvider);
+console.log("Public Client:", publicClient);
+console.log("WebSocket Public Client:", webSocketPublicClient);
 
 const connectors = [
   new WalletConnectConnector({
@@ -64,11 +64,11 @@ const connectors = [
   }),
 ];
 
-const client = createClient({
+const config = createConfig({
   autoConnect: true,
   connectors,
-  provider,
-  webSocketProvider,
+  publicClient,
+  webSocketPublicClient,
 });
 
 // ✅ Initialize Reown AppKit and store in window
@@ -117,7 +117,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <WagmiConfig client={client}>
+    <WagmiConfig config={config}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <BrowserRouter>
