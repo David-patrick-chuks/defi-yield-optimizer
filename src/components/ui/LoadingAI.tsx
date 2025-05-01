@@ -1,24 +1,35 @@
 
-import { CircleArrowDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-const LoadingAI = ({ className }: { className?: string }) => {
+interface LoadingAIProps {
+  text?: string;
+}
+
+const LoadingAI = ({ text = "SafeSage AI is analyzing..." }: LoadingAIProps) => {
   return (
-    <div className={cn("flex flex-col items-center justify-center p-8", className)}>
-      <div className="relative">
-        <div className="w-16 h-16 rounded-full border-4 border-slate-200"></div>
-        <div className="absolute inset-0 w-16 h-16 rounded-full border-t-4 border-sage-500 animate-spin"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <CircleArrowDown className="h-8 w-8 text-slate-400" />
-        </div>
+    <div className="flex flex-col items-center justify-center text-center">
+      <div className="relative w-12 h-12 mb-4">
+        <div className="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+        <div className="absolute inset-0 border-4 border-sage-500 rounded-full animate-spin border-t-transparent"></div>
       </div>
-      <h3 className="mt-6 text-lg font-medium text-slate-800">AI Processing</h3>
-      <p className="mt-2 text-sm text-slate-500 max-w-xs text-center">
-        SafeSage AI is analyzing your portfolio and generating risk assessments.
-        This may take a few moments...
+      <h3 className="text-xl font-medium text-slate-800 mb-2">{text}</h3>
+      <p className="text-slate-500 max-w-sm">
+        We're analyzing token data and generating insights using AI. This may take a moment.
       </p>
-      <div className="mt-8 w-64 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-        <div className="h-full bg-slate-400 rounded-full animate-shimmer shimmer-effect" style={{ width: '70%' }}></div>
+      
+      <div className="mt-8 flex items-center gap-2">
+        <div className={cn(
+          "h-2 w-2 rounded-full bg-sage-500",
+          "animate-[pulse_1s_ease-in-out_infinite]"
+        )}></div>
+        <div className={cn(
+          "h-2 w-2 rounded-full bg-sage-500",
+          "animate-[pulse_1s_ease-in-out_0.2s_infinite]"
+        )}></div>
+        <div className={cn(
+          "h-2 w-2 rounded-full bg-sage-500",
+          "animate-[pulse_1s_ease-in-out_0.4s_infinite]"
+        )}></div>
       </div>
     </div>
   );

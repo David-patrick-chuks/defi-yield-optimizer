@@ -1,7 +1,6 @@
 
-import { CircleArrowRight } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { ChevronDown, ChevronUp, AlertTriangle, CheckCircle, ShieldCheck } from 'lucide-react';
 
 interface TokenRiskCardProps {
   name: string;
@@ -9,86 +8,85 @@ interface TokenRiskCardProps {
   riskScore: number;
   explanation: string;
   suggestions?: string;
-  logoUrl?: string;
 }
 
-const getRiskColor = (score: number) => {
-  if (score <= 3) return 'bg-risk-low';
-  if (score <= 6) return 'bg-risk-moderate';
-  return 'bg-risk-high';
-};
-
-const getRiskText = (score: number) => {
-  if (score <= 3) return 'Low Risk';
-  if (score <= 6) return 'Moderate Risk';
-  return 'High Risk';
-};
-
-const TokenRiskCard = ({ 
-  name, 
-  symbol, 
-  riskScore, 
-  explanation, 
+const TokenRiskCard = ({
+  name,
+  symbol,
+  riskScore,
+  explanation,
   suggestions,
-  logoUrl 
 }: TokenRiskCardProps) => {
-  const riskColor = getRiskColor(riskScore);
-  const riskText = getRiskText(riskScore);
+  const [expanded, setExpanded] = useState(false);
+  
+  const toggleExpanded = () => {
+    setExpanded(!expanded);
+  };
+  
+  const getRiskLabel = () => {
+    if (riskScore <= 3) return 'Low Risk';
+    if (riskScore <= 6) return 'Moderate Risk';
+    return 'High Risk';
+  };
+  
+  const getRiskColor = () => {
+    if (riskScore <= 3) return 'bg-risk-low text-green-800';
+    if (riskScore <= 6) return 'bg-risk-medium text-amber-800';
+    return 'bg-risk-high text-red-800';
+  };
+  
+  const getRiskIcon = () => {
+    if (riskScore <= 3) return <CheckCircle className="h-5 w-5 text-green-600" />;
+    if (riskScore <= 6) return <ShieldCheck className="h-5 w-5 text-amber-600" />;
+    return <AlertTriangle className="h-5 w-5 text-red-600" />;
+  };
   
   return (
-    <div className="ai-card p-5">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+      <div 
+        className="p-4 flex items-center justify-between cursor-pointer" 
+        onClick={toggleExpanded}
+      >
         <div className="flex items-center gap-3">
-          <div className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center bg-slate-100",
-            "text-slate-500 font-medium text-sm"
-          )}>
-            {logoUrl ? (
-              <img src={logoUrl} alt={`${name} logo`} className="w-8 h-8 rounded-full" />
-            ) : (
-              symbol.slice(0, 2)
-            )}
-          </div>
-          
+          {getRiskIcon()}
           <div>
-            <h3 className="font-medium text-slate-800">{name}</h3>
-            <p className="text-sm text-slate-500">{symbol}</p>
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium text-slate-800">{name}</h3>
+              <span className="text-sm text-slate-500">{symbol}</span>
+            </div>
+            <div className={`text-xs px-2 py-0.5 rounded-full inline-block mt-1 ${getRiskColor()}`}>
+              {getRiskLabel()}
+            </div>
           </div>
         </div>
         
-        <div className="text-right">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold">{riskScore.toFixed(1)}</span>
-            <div className="text-xs font-medium px-2 py-1 rounded-full" 
-                 style={{ backgroundColor: riskColor === 'bg-risk-low' ? '#68D391' : 
-                                         riskColor === 'bg-risk-moderate' ? '#F6E05E' : 
-                                         '#F56565',
-                          color: riskColor === 'bg-risk-low' ? '#276749' : 
-                                 riskColor === 'bg-risk-moderate' ? '#975A16' : 
-                                 '#9B2C2C' }}>
-              {riskText}
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="text-center">
+            <p className="text-2xl font-bold">{riskScore.toFixed(1)}</p>
+            <p className="text-xs text-slate-500">Risk Score</p>
           </div>
-          <Progress value={riskScore * 10} className="w-24 h-1.5 mt-1" 
-                    style={{ backgroundColor: '#E2E8F0' }}
-                    indicatorClassName={riskColor} />
+          {expanded ? (
+            <ChevronUp className="h-5 w-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="h-5 w-5 text-slate-400" />
+          )}
         </div>
       </div>
       
-      <div className="mt-4">
-        <h4 className="text-sm font-medium text-slate-700 mb-1">AI Analysis</h4>
-        <p className="text-slate-600 text-sm">{explanation}</p>
-        
-        {suggestions && (
-          <div className="mt-3 pt-3 border-t border-slate-100">
-            <h4 className="text-sm font-medium text-slate-700 mb-1 flex items-center gap-1">
-              <CircleArrowRight className="h-3.5 w-3.5 text-sage-500" />
-              Safer Alternatives
-            </h4>
-            <p className="text-slate-600 text-sm">{suggestions}</p>
-          </div>
-        )}
-      </div>
+      {expanded && (
+        <div className="p-4 bg-slate-50 border-t border-slate-200">
+          <p className="text-sm text-slate-600 mb-4">{explanation}</p>
+          
+          {suggestions && (
+            <>
+              <h4 className="text-sm font-medium text-slate-700 mb-2">Suggestions</h4>
+              <div className="bg-sage-50 border border-sage-200 rounded p-3">
+                <p className="text-sm text-sage-700">{suggestions}</p>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
