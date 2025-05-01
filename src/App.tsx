@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 import { createAppKit } from '@reown/appkit';
-import { createConfig, http } from 'wagmi';
+import { createConfig } from 'wagmi';
 import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
 
 import Index from "./pages/Index";
@@ -24,7 +24,7 @@ const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided pro
 
 // Create wagmi config with proper configuration
 export const config = createConfig({
-  publicClient: ({ chainId }) => http(),
+  publicClient: () => ({ chain: mainnet }),
   connectors: [],
 });
 
@@ -34,19 +34,27 @@ createAppKit({
   networks: {
     [mainnet.id]: {
       id: mainnet.id,
-      name: mainnet.name
+      name: mainnet.name,
+      nativeCurrency: mainnet.nativeCurrency,
+      rpcUrls: mainnet.rpcUrls
     },
     [polygon.id]: {
       id: polygon.id,
-      name: polygon.name
+      name: polygon.name,
+      nativeCurrency: polygon.nativeCurrency,
+      rpcUrls: polygon.rpcUrls
     },
     [arbitrum.id]: {
       id: arbitrum.id,
-      name: arbitrum.name
+      name: arbitrum.name,
+      nativeCurrency: arbitrum.nativeCurrency,
+      rpcUrls: arbitrum.rpcUrls
     },
     [optimism.id]: {
       id: optimism.id,
-      name: optimism.name
+      name: optimism.name,
+      nativeCurrency: optimism.nativeCurrency,
+      rpcUrls: optimism.rpcUrls
     }
   },
   themeVariables: {
