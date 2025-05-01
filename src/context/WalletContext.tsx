@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { toast } from '@/components/ui/sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WalletContextType {
   address: string | undefined;
@@ -30,6 +31,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [balance, setBalance] = useState('0');
   const [isConnecting, setIsConnecting] = useState(false);
   const [chainId, setChainId] = useState<number | undefined>(undefined);
+  const isMobile = useIsMobile();
   
   // The useAccount hook returns different properties in wagmi v1.x
   const { address, isConnected, connector } = useAccount({
@@ -60,7 +62,10 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       setIsConnecting(false);
       if (error) {
         console.error('Connection error:', error);
-        toast.error("Failed to connect wallet. Please try again.");
+        const errorMessage = isMobile 
+          ? "Mobile wallet not detected. Please ensure your wallet app is installed and open."
+          : "Failed to connect wallet. Please try again.";
+        toast.error(errorMessage);
       }
     }
   });
@@ -100,21 +105,42 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (connectError) {
       console.log("Connection error detected:", connectError);
-      toast.error("Failed to connect wallet. Please try again.");
+      const errorMessage = isMobile 
+        ? "Mobile wallet not detected. Please ensure your wallet app is installed and open before trying again."
+        : "Failed to connect wallet. Please try again.";
+      toast.error(errorMessage);
     }
-  }, [connectError]);
+  }, [connectError, isMobile]);
 
   const connectWallet = async () => {
     if (isConnecting) return; // Prevent multiple connection attempts
     
     setIsConnecting(true);
     try {
-      console.log("Attempting to connect wallet...");
+      console.log("Attempting to connect wallet...", isMobile ? "on mobile" : "on desktop");
+      
+      // For mobile, we should check if the browser has ethereum or window.ethereum
+      if (isMobile) {
+        // Check if a wallet is available in the mobile browser
+        const ethereum = (window as any).ethereum;
+        if (!ethereum) {
+          console.log("No ethereum object found in mobile browser");
+          setIsConnecting(false);
+          toast.error("No wallet detected. Please open this site in your wallet's browser or install a wallet app.", {
+            duration: 6000,
+          });
+          return;
+        }
+      }
+      
       await connect();
     } catch (error) {
       console.error("Error in connectWallet:", error);
       setIsConnecting(false);
-      toast.error("Failed to connect wallet. Please try again.");
+      const errorMessage = isMobile 
+        ? "Could not connect to mobile wallet. Please ensure your wallet app is open."
+        : "Failed to connect wallet. Please try again.";
+      toast.error(errorMessage);
     }
   };
 

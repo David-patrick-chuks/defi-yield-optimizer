@@ -4,16 +4,18 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Shield, Menu, X, Wallet } from 'lucide-react';
 import { useWallet } from '@/context/WalletContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isConnected, connectWallet, disconnectWallet, address, isConnecting } = useWallet();
+  const isMobile = useIsMobile();
   
   const handleWalletAction = () => {
     if (isConnected) {
       disconnectWallet();
     } else {
-      console.log("Initiating wallet connection from navbar");
+      console.log("Initiating wallet connection from navbar", isMobile ? "on mobile" : "on desktop");
       connectWallet();
     }
   };
@@ -101,7 +103,10 @@ const Navbar = () => {
               <Button 
                 className={`w-full ${isConnected ? "bg-sage-500 hover:bg-sage-600" : "gradient-bg-secondary"}`} 
                 size="sm"
-                onClick={handleWalletAction}
+                onClick={() => {
+                  handleWalletAction();
+                  setIsOpen(false);
+                }}
                 disabled={isConnecting}
               >
                 <Wallet className="h-4 w-4 mr-2" />
