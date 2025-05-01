@@ -8,6 +8,7 @@ import { WalletProvider } from "./context/WalletContext";
 import { createAppKit } from '@reown/appkit';
 import { createConfig } from 'wagmi';
 import { mainnet, polygon, arbitrum, optimism } from 'viem/chains';
+import { createPublicClient, http } from 'viem';
 
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -22,41 +23,47 @@ import NotFound from "./pages/NotFound";
 // Reown AppKit setup
 const projectId = "b416daa29430acf394a8a82ba73e007f"; // Using your provided project ID
 
+// Create a proper public client for wagmi
+const publicClient = createPublicClient({
+  chain: mainnet,
+  transport: http()
+});
+
 // Create wagmi config with proper configuration
 export const config = createConfig({
-  publicClient: () => ({ chain: mainnet }),
+  publicClient,
   connectors: [],
 });
 
 // Initialize Reown AppKit with proper configuration
 createAppKit({
   projectId,
-  networks: {
-    [mainnet.id]: {
+  networks: [
+    {
       id: mainnet.id,
       name: mainnet.name,
       nativeCurrency: mainnet.nativeCurrency,
       rpcUrls: mainnet.rpcUrls
     },
-    [polygon.id]: {
+    {
       id: polygon.id,
       name: polygon.name,
       nativeCurrency: polygon.nativeCurrency,
       rpcUrls: polygon.rpcUrls
     },
-    [arbitrum.id]: {
+    {
       id: arbitrum.id,
       name: arbitrum.name,
       nativeCurrency: arbitrum.nativeCurrency,
       rpcUrls: arbitrum.rpcUrls
     },
-    [optimism.id]: {
+    {
       id: optimism.id,
       name: optimism.name,
       nativeCurrency: optimism.nativeCurrency,
       rpcUrls: optimism.rpcUrls
     }
-  },
+  ],
   themeVariables: {
     '--w3m-accent': '#5E9C76', // Match sage-500 color
   },
