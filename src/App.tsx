@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
 import { EthereumClient, w3mConnectors, w3mProvider } from "@web3modal/ethereum";
-import { Web3Modal } from "@web3modal/react"; // Fixed import
+import { Web3Modal } from "@web3modal/react";
 import { WalletProvider } from "./context/WalletContext";
 
 import Index from "./pages/Index";
@@ -40,10 +40,10 @@ const App = () => (
     <WagmiConfig config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <WalletProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+          <BrowserRouter>
+            <WalletProvider>
+              <Toaster />
+              <Sonner />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -55,8 +55,8 @@ const App = () => (
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </WalletProvider>
+            </WalletProvider>
+          </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
     </WagmiConfig>
