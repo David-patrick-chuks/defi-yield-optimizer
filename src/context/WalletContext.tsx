@@ -3,8 +3,8 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAccount, useConnect, useDisconnect, useBalance, useChainId } from 'wagmi';
-// Import correctly from the main package, not a submodule
-import { openWeb3Modal } from '@reown/appkit';
+// Import the appkit
+import { createAppKit } from '@reown/appkit';
 
 interface WalletContextType {
   address: string | undefined;
@@ -55,11 +55,15 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log("Attempting to connect wallet...");
       
-      // Use Reown AppKit modal for connecting
-      await openWeb3Modal();
+      // Using the globally created AppKit instance to open the modal
+      const appkit = window.reownAppKit;
+      if (appkit) {
+        appkit.open();
+      } else {
+        console.error("AppKit instance not available");
+        toast.error("Wallet connection not available");
+      }
       
-      // The modal will handle the connection process
-      // We just need to set isConnecting to false
       setIsConnecting(false);
     } catch (error) {
       console.error("Error in connectWallet:", error);
