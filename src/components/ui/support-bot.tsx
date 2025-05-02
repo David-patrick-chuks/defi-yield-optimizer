@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { api, ChatMessage } from '@/services/api';
+import LoadingAI from '@/components/ui/LoadingAI';
 
 export function SupportBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +13,7 @@ export function SupportBot() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Hi there! I\'m SafeSage\'s AI assistant. I can help with questions about crypto risk, DeFi safety, or how to use our platform. How can I assist you today?',
+      content: 'Welcome to SafeSage! 👋 I\'m your personal AI assistant, ready to help with any questions about crypto risk assessment, DeFi safety practices, or how to use our platform effectively. How can I assist you today?',
       timestamp: new Date().toISOString()
     }
   ]);
@@ -35,7 +36,7 @@ export function SupportBot() {
       timestamp: new Date().toISOString()
     };
     
-    setChatHistory([...chatHistory, userMessage]);
+    setChatHistory(prev => [...prev, userMessage]);
     setMessage('');
     setIsLoading(true);
     
@@ -44,7 +45,7 @@ export function SupportBot() {
       const response = await api.sendMessage(message, chatHistory);
       
       // Add response to chat
-      setChatHistory([...chatHistory, userMessage, {
+      setChatHistory(prev => [...prev, userMessage, {
         role: 'assistant',
         content: response.response,
         timestamp: response.timestamp
@@ -54,9 +55,9 @@ export function SupportBot() {
       toast.error('Failed to get a response. Please try again.');
       
       // Add fallback response
-      setChatHistory([...chatHistory, userMessage, {
+      setChatHistory(prev => [...prev, userMessage, {
         role: 'assistant',
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again later or contact support if this persists.",
+        content: "I apologize for the inconvenience. I'm having trouble connecting right now. Please try again later or contact our support team if this issue persists.",
         timestamp: new Date().toISOString()
       }]);
     } finally {
@@ -92,7 +93,7 @@ export function SupportBot() {
             <Bot className="h-5 w-5 text-sage-600 mr-2" />
             <div>
               <h3 className="font-medium text-slate-800">SafeSage Assistant</h3>
-              <p className="text-xs text-slate-500">Ask me about DeFi risks</p>
+              <p className="text-xs text-slate-500">Your crypto risk analysis expert</p>
             </div>
             <Button
               variant="ghost"
@@ -127,6 +128,19 @@ export function SupportBot() {
                 </div>
               </div>
             ))}
+            
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] p-3 rounded-lg bg-sage-50 text-slate-800">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-2 w-2 rounded-full bg-sage-400 animate-pulse"></div>
+                    <div className="h-2 w-2 rounded-full bg-sage-400 animate-pulse delay-75"></div>
+                    <div className="h-2 w-2 rounded-full bg-sage-400 animate-pulse delay-150"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
           
@@ -136,9 +150,10 @@ export function SupportBot() {
               <Input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type a message..."
+                placeholder="Ask about SafeSage..."
                 className="flex-1"
                 disabled={isLoading}
+                autoFocus={isOpen}
               />
               <Button 
                 type="submit" 
@@ -149,9 +164,6 @@ export function SupportBot() {
                 <SendHorizontal className="h-4 w-4" />
               </Button>
             </div>
-            {isLoading && (
-              <p className="text-xs text-slate-500 mt-1">AI assistant is typing...</p>
-            )}
           </form>
         </div>
       )}
