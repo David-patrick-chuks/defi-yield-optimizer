@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface TokenCardProps {
   name: string;
@@ -8,6 +8,8 @@ interface TokenCardProps {
   balance: string;
   value: string;
   logoUrl?: string;
+  priceChange24h?: string;
+  riskScore?: number;
   onClick?: () => void;
 }
 
@@ -17,12 +19,28 @@ const TokenCard = ({
   balance,
   value,
   logoUrl,
+  priceChange24h,
+  riskScore = 5,
   onClick,
 }: TokenCardProps) => {
   const [expanded, setExpanded] = useState(false);
   
   const toggleExpanded = () => {
     setExpanded(!expanded);
+  };
+  
+  const isPriceUp = priceChange24h && parseFloat(priceChange24h) >= 0;
+  
+  const getRiskLabel = () => {
+    if (riskScore <= 3) return 'Low Risk';
+    if (riskScore <= 6) return 'Moderate Risk';
+    return 'High Risk';
+  };
+
+  const getRiskColor = () => {
+    if (riskScore <= 3) return 'bg-green-100';
+    if (riskScore <= 6) return 'bg-yellow-100';
+    return 'bg-red-100';
   };
   
   return (
@@ -32,7 +50,7 @@ const TokenCard = ({
     >
       <div className="p-4 flex items-center justify-between cursor-pointer" onClick={toggleExpanded}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-sage-100 rounded-full flex items-center justify-center">
+          <div className="w-10 h-10 bg-sage-100 rounded-full flex items-center justify-center overflow-hidden">
             {logoUrl ? (
               <img src={logoUrl} alt={symbol} className="w-6 h-6" />
             ) : (
@@ -69,17 +87,32 @@ const TokenCard = ({
             </div>
             <div>
               <p className="text-slate-500">24h Change</p>
-              <p className="font-medium text-green-600">+2.5%</p>
+              <div className="flex items-center">
+                {priceChange24h ? (
+                  <>
+                    {isPriceUp ? (
+                      <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+                    ) : (
+                      <TrendingDown className="h-4 w-4 text-red-600 mr-1" />
+                    )}
+                    <p className={`font-medium ${isPriceUp ? 'text-green-600' : 'text-red-600'}`}>
+                      {isPriceUp ? '+' : ''}{priceChange24h}%
+                    </p>
+                  </>
+                ) : (
+                  <p className="font-medium text-slate-600">--</p>
+                )}
+              </div>
             </div>
             <div className="col-span-2 mt-2">
               <p className="text-slate-500 mb-1">Risk Score</p>
               <div className="w-full bg-slate-100 rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-green-500 to-sage-500 h-2 rounded-full" 
-                  style={{ width: '25%' }}
+                  className={`${riskScore <= 3 ? 'bg-green-500' : riskScore <= 6 ? 'bg-yellow-500' : 'bg-red-500'} h-2 rounded-full`}
+                  style={{ width: `${(riskScore / 10) * 100}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-slate-500 mt-1">Low Risk (2.5)</p>
+              <p className="text-xs text-slate-500 mt-1">{getRiskLabel()} ({riskScore.toFixed(1)})</p>
             </div>
           </div>
         </div>

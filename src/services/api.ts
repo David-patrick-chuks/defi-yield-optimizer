@@ -65,6 +65,16 @@ class ApiService {
         response = "Bitcoin and Ethereum are generally considered lower risk in the crypto ecosystem due to their established histories, large market caps, high liquidity, robust security records, and widespread adoption. However, they still carry more volatility than traditional financial assets. SafeSage can provide you with detailed risk metrics on these assets and compare them to other tokens in your portfolio.";
       } 
       
+      // About MoveVM
+      else if (lowercaseMsg.includes('movevm') || lowercaseMsg.includes('move')) {
+        response = "MoveVM is a newer blockchain platform with a unique Move programming language designed for secure asset management. As a newer ecosystem, it carries a moderate risk profile (typically around 5.8 on our scale). SafeSage evaluates MoveVM based on its technical architecture, development activity, ecosystem growth, and tokenomics. While it shows promising innovation, its market position is still developing compared to more established chains.";
+      }
+      
+      // About IOTA
+      else if (lowercaseMsg.includes('iota') || lowercaseMsg.includes('miota')) {
+        response = "IOTA uses a distinctive Directed Acyclic Graph (DAG) structure called the Tangle rather than a traditional blockchain. It focuses on IoT applications with fee-less transactions. In our risk assessment, IOTA typically scores around 4.2 (moderate risk), reflecting its innovative technology but also considering its development challenges and adoption hurdles. SafeSage analyzes IOTA's technical foundation, market position, and use case viability in its risk evaluation.";
+      }
+      
       // About DeFi protocols
       else if (lowercaseMsg.includes('defi') || lowercaseMsg.includes('protocol') || lowercaseMsg.includes('yield') || lowercaseMsg.includes('staking')) {
         response = "DeFi protocols vary widely in risk profile. SafeSage evaluates key factors including: Total Value Locked (TVL), comprehensive audit history, governance structure, team transparency, decentralization level, and historical incidents. We recommend diversifying your DeFi exposure and using our platform to regularly monitor protocol risk scores as they can change rapidly with market conditions or protocol updates.";
@@ -77,7 +87,7 @@ class ApiService {
       
       // About SafeSage features
       else if (lowercaseMsg.includes('feature') || lowercaseMsg.includes('what can') || lowercaseMsg.includes('do for me')) {
-        response = "SafeSage offers several powerful features: 1) Portfolio Risk Analysis - get a complete risk assessment of all your held tokens, 2) Token Comparison - compare risk profiles across different cryptocurrencies, 3) Smart Contract Auditing - identify potential vulnerabilities in token contracts, 4) Risk Alerts - receive notifications about changing risk levels, and 5) Educational Resources - learn about best practices in DeFi security. Which feature would you like to explore further?";
+        response = "SafeSage offers several powerful features: 1) Portfolio Risk Analysis - get a complete risk assessment of all your held tokens including Bitcoin, Ethereum, MoveVM, IOTA and others, 2) Token Comparison - compare risk profiles across different cryptocurrencies, 3) Smart Contract Auditing - identify potential vulnerabilities in token contracts, 4) Risk Alerts - receive notifications about changing risk levels, and 5) Educational Resources - learn about best practices in DeFi security. Which feature would you like to explore further?";
       }
       
       // About the company/platform

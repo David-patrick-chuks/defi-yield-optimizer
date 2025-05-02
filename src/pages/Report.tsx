@@ -35,6 +35,19 @@ interface TokenAnalysis {
   suggestions?: string;
 }
 
+// List of supported tokens to analyze
+const SUPPORTED_TOKENS = [
+  { name: "Ethereum", symbol: "ETH", coingeckoId: "ethereum" },
+  { name: "Bitcoin", symbol: "BTC", coingeckoId: "bitcoin" },
+  { name: "MoveVM", symbol: "MOVE", coingeckoId: "move-vm" },
+  { name: "IOTA", symbol: "MIOTA", coingeckoId: "iota" },
+  { name: "Solana", symbol: "SOL", coingeckoId: "solana" },
+  { name: "Cardano", symbol: "ADA", coingeckoId: "cardano" },
+  { name: "Polkadot", symbol: "DOT", coingeckoId: "polkadot" },
+  { name: "Chainlink", symbol: "LINK", coingeckoId: "chainlink" },
+  { name: "Uniswap", symbol: "UNI", coingeckoId: "uniswap" }
+];
+
 const Report = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenAnalysis, setTokenAnalysis] = useState<TokenAnalysis[]>([]);
@@ -52,41 +65,62 @@ const Report = () => {
         
         toast.info("AI risk analysis starting...");
         
-        // Get real token data from connected wallet
-        // For now, we'll use the native token (ETH) from the wallet balance
-        // In a production app, we would fetch all tokens using an API like Moralis or Covalent
+        // Get real token data - start with ETH from wallet balance
         const realTokens: TokenData[] = [
           { 
             name: "Ethereum", 
             symbol: "ETH", 
-            balance: parseFloat(balance), 
-            price: 3500 // Mock price for now, in real app would use price API
+            balance: parseFloat(balance)
           }
         ];
         
-        // Add placeholder for chain-specific tokens based on chainId
-        if (chainId) {
-          if (chainId === 137 || chainId === 80001) {
-            realTokens.push({ 
-              name: "Polygon", 
-              symbol: "MATIC", 
-              balance: 100, 
-              price: 0.8
-            });
-          } else if (chainId === 56) {
-            realTokens.push({ 
-              name: "BNB", 
-              symbol: "BNB", 
-              balance: 2, 
-              price: 570
-            });
-          } else if (chainId === 10 || chainId === 42161) {
-            realTokens.push({ 
-              name: "Layer 2 Token", 
-              symbol: "L2T", 
-              balance: 50, 
-              price: 2.5
-            });
+        try {
+          // Try to fetch real market data
+          const ids = SUPPORTED_TOKENS.map(token => token.coingeckoId).join(',');
+          const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1`);
+          const marketData = await response.json();
+          
+          if (marketData && Array.isArray(marketData)) {
+            // Add price data to Ethereum
+            const ethData = marketData.find((coin: any) => coin.symbol.toLowerCase() === 'eth');
+            if (ethData) {
+              realTokens[0].price = ethData.current_price;
+            }
+            
+            // Add other supported tokens with simulated balances
+            const getRandomBalance = () => (Math.random() * 10 + 0.1).toFixed(4);
+            
+            for (const token of SUPPORTED_TOKENS) {
+              // Skip ETH as it's already handled
+              if (token.symbol === 'ETH') continue;
+              
+              const tokenData = marketData.find((coin: any) => 
+                coin.symbol.toLowerCase() === token.symbol.toLowerCase() || 
+                coin.id === token.coingeckoId
+              );
+              
+              if (tokenData) {
+                realTokens.push({
+                  name: token.name,
+                  symbol: token.symbol,
+                  balance: parseFloat(getRandomBalance()),
+                  price: tokenData.current_price
+                });
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching market data:", error);
+          
+          // Add fallback token data if API fails
+          if (realTokens.length === 1) {
+            realTokens.push(
+              { name: "Bitcoin", symbol: "BTC", balance: 0.0123 },
+              { name: "MoveVM", symbol: "MOVE", balance: 1250 },
+              { name: "IOTA", symbol: "MIOTA", balance: 500 },
+              { name: "Solana", symbol: "SOL", balance: 8.5 },
+              { name: "Cardano", symbol: "ADA", balance: 2500 }
+            );
           }
         }
 

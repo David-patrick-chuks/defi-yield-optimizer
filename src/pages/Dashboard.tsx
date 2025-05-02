@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TokenCard from '@/components/ui/TokenCard';
@@ -16,40 +15,103 @@ interface TokenData {
   balance: string;
   value: string;
   logoUrl?: string;
+  priceChange24h?: string;
+  riskScore?: number;
 }
+
+// List of tokens to display (expanded)
+const SUPPORTED_TOKENS = [
+  { name: "Ethereum", symbol: "ETH", coingeckoId: "ethereum" },
+  { name: "Bitcoin", symbol: "BTC", coingeckoId: "bitcoin" },
+  { name: "MoveVM", symbol: "MOVE", coingeckoId: "move-vm" },
+  { name: "IOTA", symbol: "MIOTA", coingeckoId: "iota" },
+  { name: "Solana", symbol: "SOL", coingeckoId: "solana" },
+  { name: "Cardano", symbol: "ADA", coingeckoId: "cardano" },
+  { name: "Polkadot", symbol: "DOT", coingeckoId: "polkadot" },
+  { name: "Chainlink", symbol: "LINK", coingeckoId: "chainlink" },
+  { name: "Uniswap", symbol: "UNI", coingeckoId: "uniswap" }
+];
 
 const Dashboard = () => {
   const { isConnected, address, connectWallet, balance, chainId } = useWallet();
   const [walletTokens, setWalletTokens] = useState<TokenData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Function to fetch real token data when connected
+  // Function to fetch real token data
   const fetchTokenData = async () => {
     if (!isConnected || !address) return;
     
     setIsLoading(true);
     try {
-      // Use Moralis API to get token balances for the connected address
-      const chain = chainId ? chainId.toString() : '1'; // Default to Ethereum mainnet
-      
       // For native token (ETH), we use the balance from WalletContext
-      const nativeToken = { 
+      const nativeToken: TokenData = { 
         name: "Ethereum", 
         symbol: "ETH", 
         balance: balance, 
-        value: (parseFloat(balance) * 2500).toLocaleString() // Mocked price for demo
+        value: "0",
+        priceChange24h: "0",
+        riskScore: 2.5
       };
+
+      // Get current market data from CoinGecko
+      const ids = SUPPORTED_TOKENS.map(token => token.coingeckoId).join(',');
+      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h`);
+      const marketData = await response.json();
       
-      // Fetch ERC20 tokens
-      // In a production app, call an API like Moralis or Alchemy for a complete list
-      // For now, we'll just use the native token
+      // Calculate ETH USD value using real market data
+      const ethMarketData = marketData.find((coin: any) => coin.symbol.toLowerCase() === 'eth');
+      if (ethMarketData) {
+        const ethPrice = ethMarketData.current_price;
+        nativeToken.value = (parseFloat(balance) * ethPrice).toLocaleString();
+        nativeToken.priceChange24h = ethMarketData.price_change_percentage_24h?.toFixed(2);
+        nativeToken.logoUrl = ethMarketData.image;
+      }
+      
+      // Create tokens array starting with native token
       const tokens: TokenData[] = [nativeToken];
+      
+      // Simulate balances for other tokens (in a real app, this would come from wallet/API)
+      // Random balance between 0.1 and 10 for demo purposes
+      const getRandomBalance = () => (Math.random() * 10 + 0.1).toFixed(4);
+      
+      // Add other supported tokens with real market data
+      for (const supportedToken of SUPPORTED_TOKENS) {
+        // Skip ETH as it's already handled
+        if (supportedToken.symbol === 'ETH') continue;
+        
+        const tokenMarketData = marketData.find((coin: any) => 
+          coin.symbol.toLowerCase() === supportedToken.symbol.toLowerCase() ||
+          coin.id === supportedToken.coingeckoId
+        );
+        
+        if (tokenMarketData) {
+          const randomBalance = getRandomBalance();
+          tokens.push({
+            name: supportedToken.name,
+            symbol: supportedToken.symbol,
+            balance: randomBalance,
+            value: (parseFloat(randomBalance) * tokenMarketData.current_price).toLocaleString(),
+            logoUrl: tokenMarketData.image,
+            priceChange24h: tokenMarketData.price_change_percentage_24h?.toFixed(2),
+            riskScore: parseFloat((Math.random() * 8 + 1).toFixed(1)) // Random risk score between 1 and 9
+          });
+        }
+      }
       
       setWalletTokens(tokens);
       toast.success("Portfolio data loaded");
     } catch (error) {
       console.error("Error fetching token data:", error);
-      toast.error("Failed to fetch token data");
+      toast.error("Failed to fetch real-time token data. Using fallback data.");
+      
+      // Fallback to static data if API call fails
+      const fallbackTokens: TokenData[] = [
+        { name: "Ethereum", symbol: "ETH", balance: balance, value: (parseFloat(balance) * 3500).toLocaleString(), riskScore: 2.5 },
+        { name: "Bitcoin", symbol: "BTC", balance: "0.0123", value: (0.0123 * 65000).toLocaleString(), riskScore: 2.1 },
+        { name: "MoveVM", symbol: "MOVE", balance: "1250", value: (1250 * 0.85).toLocaleString(), riskScore: 5.8 },
+        { name: "IOTA", symbol: "MIOTA", balance: "500", value: (500 * 0.42).toLocaleString(), riskScore: 4.2 }
+      ];
+      setWalletTokens(fallbackTokens);
     } finally {
       setIsLoading(false);
     }
@@ -112,6 +174,8 @@ const Dashboard = () => {
                       balance={token.balance}
                       value={token.value}
                       logoUrl={token.logoUrl}
+                      priceChange24h={token.priceChange24h}
+                      riskScore={token.riskScore}
                       onClick={() => {}}
                     />
                   ))
