@@ -35,7 +35,7 @@ interface TokenAnalysis {
   suggestions?: string;
 }
 
-// List of supported tokens to analyze
+// Complete list of supported tokens to analyze
 const SUPPORTED_TOKENS = [
   { name: "Ethereum", symbol: "ETH", coingeckoId: "ethereum" },
   { name: "Bitcoin", symbol: "BTC", coingeckoId: "bitcoin" },
@@ -45,7 +45,14 @@ const SUPPORTED_TOKENS = [
   { name: "Cardano", symbol: "ADA", coingeckoId: "cardano" },
   { name: "Polkadot", symbol: "DOT", coingeckoId: "polkadot" },
   { name: "Chainlink", symbol: "LINK", coingeckoId: "chainlink" },
-  { name: "Uniswap", symbol: "UNI", coingeckoId: "uniswap" }
+  { name: "Uniswap", symbol: "UNI", coingeckoId: "uniswap" },
+  { name: "Avalanche", symbol: "AVAX", coingeckoId: "avalanche-2" },
+  { name: "Polygon", symbol: "MATIC", coingeckoId: "matic-network" },
+  { name: "Near Protocol", symbol: "NEAR", coingeckoId: "near" },
+  { name: "Cosmos", symbol: "ATOM", coingeckoId: "cosmos" },
+  { name: "Algorand", symbol: "ALGO", coingeckoId: "algorand" },
+  { name: "Filecoin", symbol: "FIL", coingeckoId: "filecoin" },
+  { name: "Tezos", symbol: "XTZ", coingeckoId: "tezos" }
 ];
 
 const Report = () => {
@@ -77,7 +84,12 @@ const Report = () => {
         try {
           // Try to fetch real market data
           const ids = SUPPORTED_TOKENS.map(token => token.coingeckoId).join(',');
-          const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1`);
+          const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=100&page=1`);
+          
+          if (!response.ok) {
+            throw new Error(`API request failed with status: ${response.status}`);
+          }
+          
           const marketData = await response.json();
           
           if (marketData && Array.isArray(marketData)) {
@@ -87,9 +99,20 @@ const Report = () => {
               realTokens[0].price = ethData.current_price;
             }
             
-            // Add other supported tokens with simulated balances
-            const getRandomBalance = () => (Math.random() * 10 + 0.1).toFixed(4);
+            // Generate consistent pseudo-random balances based on wallet address
+            const getRandomBalance = (symbol: string) => {
+              // Using a hash of address + symbol to generate consistent "random" balance
+              let hash = 0;
+              const str = `${address}-${symbol}`;
+              for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+              }
+              // Generate value between 0.05 and 15
+              return Math.abs((hash % 1495 + 5) / 100);
+            };
             
+            // Add other supported tokens with simulated balances
             for (const token of SUPPORTED_TOKENS) {
               // Skip ETH as it's already handled
               if (token.symbol === 'ETH') continue;
@@ -103,7 +126,7 @@ const Report = () => {
                 realTokens.push({
                   name: token.name,
                   symbol: token.symbol,
-                  balance: parseFloat(getRandomBalance()),
+                  balance: getRandomBalance(token.symbol),
                   price: tokenData.current_price
                 });
               }
@@ -119,7 +142,9 @@ const Report = () => {
               { name: "MoveVM", symbol: "MOVE", balance: 1250 },
               { name: "IOTA", symbol: "MIOTA", balance: 500 },
               { name: "Solana", symbol: "SOL", balance: 8.5 },
-              { name: "Cardano", symbol: "ADA", balance: 2500 }
+              { name: "Cardano", symbol: "ADA", balance: 2500 },
+              { name: "Polkadot", symbol: "DOT", balance: 75 },
+              { name: "Chainlink", symbol: "LINK", balance: 120 }
             );
           }
         }

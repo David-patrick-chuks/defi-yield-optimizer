@@ -61,18 +61,35 @@ class ApiService {
       } 
       
       // About specific cryptocurrencies
-      else if (lowercaseMsg.includes('ethereum') || lowercaseMsg.includes('eth') || lowercaseMsg.includes('bitcoin') || lowercaseMsg.includes('btc')) {
-        response = "Bitcoin and Ethereum are generally considered lower risk in the crypto ecosystem due to their established histories, large market caps, high liquidity, robust security records, and widespread adoption. However, they still carry more volatility than traditional financial assets. SafeSage can provide you with detailed risk metrics on these assets and compare them to other tokens in your portfolio.";
-      } 
-      
-      // About MoveVM
-      else if (lowercaseMsg.includes('movevm') || lowercaseMsg.includes('move')) {
-        response = "MoveVM is a newer blockchain platform with a unique Move programming language designed for secure asset management. As a newer ecosystem, it carries a moderate risk profile (typically around 5.8 on our scale). SafeSage evaluates MoveVM based on its technical architecture, development activity, ecosystem growth, and tokenomics. While it shows promising innovation, its market position is still developing compared to more established chains.";
+      else if (lowercaseMsg.includes('ethereum') || lowercaseMsg.includes('eth')) {
+        response = "Ethereum is generally considered lower risk in the crypto ecosystem due to its established history, large market cap, high liquidity, and robust security records. It typically scores around 2.5 on our risk scale. As the leading smart contract platform, ETH benefits from widespread adoption and a large developer community. However, it faces challenges with scaling and competition from newer, more scalable blockchains.";
       }
       
-      // About IOTA
+      else if (lowercaseMsg.includes('bitcoin') || lowercaseMsg.includes('btc')) {
+        response = "Bitcoin has the lowest risk profile among cryptocurrencies, typically scoring around 2.1 on our scale. As the first and largest cryptocurrency, it benefits from strong network effects, the highest liquidity, and widespread institutional adoption. Its well-established security model and limited supply make it a relatively safer store of value, though it still experiences significant volatility compared to traditional assets.";
+      }
+      
+      // About MoveVM - expanded information
+      else if (lowercaseMsg.includes('movevm') || lowercaseMsg.includes('move')) {
+        response = "MoveVM is a virtual machine designed for secure digital asset management, originally developed by Facebook for the Libra/Diem blockchain. It's now utilized in several blockchain platforms including Aptos, Sui, and others. The Move language is specifically designed for smart contracts that handle digital assets securely.\n\nIn SafeSage's risk assessment, MoveVM typically scores around 5.8 (moderate-high risk). While its security-focused design and formal verification capabilities are strengths, it's still evolving with limited ecosystem maturity compared to more established blockchains. The token shows promising technological innovation but experiences higher volatility and lower liquidity than more established cryptocurrencies.";
+      }
+      
+      // About IOTA - expanded information
       else if (lowercaseMsg.includes('iota') || lowercaseMsg.includes('miota')) {
-        response = "IOTA uses a distinctive Directed Acyclic Graph (DAG) structure called the Tangle rather than a traditional blockchain. It focuses on IoT applications with fee-less transactions. In our risk assessment, IOTA typically scores around 4.2 (moderate risk), reflecting its innovative technology but also considering its development challenges and adoption hurdles. SafeSage analyzes IOTA's technical foundation, market position, and use case viability in its risk evaluation.";
+        response = "IOTA uses a distinctive Directed Acyclic Graph (DAG) structure called 'The Tangle' rather than a traditional blockchain. This design enables fee-less transactions and high scalability, targeting Internet of Things (IoT) applications. The project has undergone significant protocol updates, including the Chrysalis update and working toward full decentralization with IOTA 2.0 (Coordicide).\n\nIn SafeSage's risk assessment, IOTA typically scores around 4.2 (moderate risk). Its strengths include the innovative fee-less structure, partnerships with industrial companies for IoT integration, and focused use case. However, it has faced technical delays, historical network outages, and presents a higher risk profile than more established cryptocurrencies. Consider it for exposure to IoT blockchain solutions but with appropriate position sizing.";
+      }
+      
+      // Added detailed responses for other tokens
+      else if (lowercaseMsg.includes('solana') || lowercaseMsg.includes('sol')) {
+        response = "Solana is a high-performance blockchain focused on scalability and low transaction costs. It uses a unique Proof of History consensus mechanism alongside Proof of Stake to achieve high throughput (up to 65,000 TPS in theory). In SafeSage's assessment, Solana typically scores around 3.8 (moderate risk). Its strengths include high performance, growing ecosystem of DApps, and strong developer activity. Risks include past network outages, relatively higher centralization compared to other major chains, and considerable competition in the high-performance blockchain space.";
+      }
+      
+      else if (lowercaseMsg.includes('cardano') || lowercaseMsg.includes('ada')) {
+        response = "Cardano follows a research-first, peer-reviewed approach to blockchain development. It employs a Proof of Stake consensus algorithm called Ouroboros and has gone through careful development phases (Byron, Shelley, Goguen, etc.). In SafeSage's assessment, Cardano typically scores around 3.5 (moderate risk). Its strengths include strong academic foundation, energy-efficient consensus mechanism, and dedicated community. Challenges include slower deployment of features compared to competitors and questions about developer adoption and ecosystem growth. Its methodical development approach may provide more long-term stability but slower feature delivery.";
+      }
+      
+      else if (lowercaseMsg.includes('polkadot') || lowercaseMsg.includes('dot')) {
+        response = "Polkadot is a multi-chain platform enabling different blockchains to interoperate through a central relay chain. It was founded by Ethereum co-founder Dr. Gavin Wood and focuses on cross-chain communication through parachains. In SafeSage's assessment, Polkadot scores around 4.0 (moderate risk). Its strengths include strong interoperability focus, experienced development team, and innovative governance model. Risks involve complex technical architecture, competition from other interoperability solutions, and the relatively early stage of its ecosystem. Consider Polkadot as an investment in blockchain interoperability infrastructure.";
       }
       
       // About DeFi protocols
@@ -82,7 +99,7 @@ class ApiService {
       
       // About wallet connection
       else if (lowercaseMsg.includes('wallet') || lowercaseMsg.includes('connect') || lowercaseMsg.includes('metamask')) {
-        response = "SafeSage supports various wallets including MetaMask, WalletConnect, and other popular Web3 wallets. Your wallet connection is completely secure and read-only - we never have access to your private keys or the ability to move your funds. To connect, simply click the 'Connect Wallet' button on the dashboard page and select your preferred wallet provider.";
+        response = "SafeSage supports various wallets including MetaMask, WalletConnect, Coinbase Wallet and other popular Web3 wallets. Your wallet connection is completely secure and read-only - we never have access to your private keys or the ability to move your funds. To connect, simply click the 'Connect Wallet' button on the dashboard page and select your preferred wallet provider. If you experience any issues connecting, try refreshing your browser or ensuring your wallet extension is up to date.";
       } 
       
       // About SafeSage features

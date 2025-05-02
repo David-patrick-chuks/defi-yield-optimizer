@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TokenCard from '@/components/ui/TokenCard';
@@ -19,7 +20,7 @@ interface TokenData {
   riskScore?: number;
 }
 
-// List of tokens to display (expanded)
+// Complete list of supported tokens
 const SUPPORTED_TOKENS = [
   { name: "Ethereum", symbol: "ETH", coingeckoId: "ethereum" },
   { name: "Bitcoin", symbol: "BTC", coingeckoId: "bitcoin" },
@@ -29,11 +30,18 @@ const SUPPORTED_TOKENS = [
   { name: "Cardano", symbol: "ADA", coingeckoId: "cardano" },
   { name: "Polkadot", symbol: "DOT", coingeckoId: "polkadot" },
   { name: "Chainlink", symbol: "LINK", coingeckoId: "chainlink" },
-  { name: "Uniswap", symbol: "UNI", coingeckoId: "uniswap" }
+  { name: "Uniswap", symbol: "UNI", coingeckoId: "uniswap" },
+  { name: "Avalanche", symbol: "AVAX", coingeckoId: "avalanche-2" },
+  { name: "Polygon", symbol: "MATIC", coingeckoId: "matic-network" },
+  { name: "Near Protocol", symbol: "NEAR", coingeckoId: "near" },
+  { name: "Cosmos", symbol: "ATOM", coingeckoId: "cosmos" },
+  { name: "Algorand", symbol: "ALGO", coingeckoId: "algorand" },
+  { name: "Filecoin", symbol: "FIL", coingeckoId: "filecoin" },
+  { name: "Tezos", symbol: "XTZ", coingeckoId: "tezos" }
 ];
 
 const Dashboard = () => {
-  const { isConnected, address, connectWallet, balance, chainId } = useWallet();
+  const { isConnected, address, connectWallet, connectMetaMask, connectWalletConnect, connectCoinbaseWallet, balance, chainId } = useWallet();
   const [walletTokens, setWalletTokens] = useState<TokenData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -55,8 +63,19 @@ const Dashboard = () => {
 
       // Get current market data from CoinGecko
       const ids = SUPPORTED_TOKENS.map(token => token.coingeckoId).join(',');
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h`);
+      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`);
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status: ${response.status}`);
+      }
+      
       const marketData = await response.json();
+      
+      if (!Array.isArray(marketData)) {
+        throw new Error('Invalid market data format');
+      }
+      
+      console.log("Fetched market data:", marketData.length, "tokens");
       
       // Calculate ETH USD value using real market data
       const ethMarketData = marketData.find((coin: any) => coin.symbol.toLowerCase() === 'eth');
@@ -70,9 +89,18 @@ const Dashboard = () => {
       // Create tokens array starting with native token
       const tokens: TokenData[] = [nativeToken];
       
-      // Simulate balances for other tokens (in a real app, this would come from wallet/API)
-      // Random balance between 0.1 and 10 for demo purposes
-      const getRandomBalance = () => (Math.random() * 10 + 0.1).toFixed(4);
+      // Generate consistent pseudo-random balances based on wallet address
+      const getRandomBalance = (symbol: string) => {
+        // Using a hash of address + symbol to generate consistent "random" balance
+        let hash = 0;
+        const str = `${address}-${symbol}`;
+        for (let i = 0; i < str.length; i++) {
+          hash = ((hash << 5) - hash) + str.charCodeAt(i);
+          hash |= 0;
+        }
+        // Generate value between 0.05 and 15
+        return Math.abs((hash % 1495 + 5) / 100).toFixed(4);
+      };
       
       // Add other supported tokens with real market data
       for (const supportedToken of SUPPORTED_TOKENS) {
@@ -85,12 +113,12 @@ const Dashboard = () => {
         );
         
         if (tokenMarketData) {
-          const randomBalance = getRandomBalance();
+          const simulatedBalance = getRandomBalance(supportedToken.symbol);
           tokens.push({
             name: supportedToken.name,
             symbol: supportedToken.symbol,
-            balance: randomBalance,
-            value: (parseFloat(randomBalance) * tokenMarketData.current_price).toLocaleString(),
+            balance: simulatedBalance,
+            value: (parseFloat(simulatedBalance) * tokenMarketData.current_price).toLocaleString(),
             logoUrl: tokenMarketData.image,
             priceChange24h: tokenMarketData.price_change_percentage_24h?.toFixed(2),
             riskScore: parseFloat((Math.random() * 8 + 1).toFixed(1)) // Random risk score between 1 and 9
@@ -109,7 +137,10 @@ const Dashboard = () => {
         { name: "Ethereum", symbol: "ETH", balance: balance, value: (parseFloat(balance) * 3500).toLocaleString(), riskScore: 2.5 },
         { name: "Bitcoin", symbol: "BTC", balance: "0.0123", value: (0.0123 * 65000).toLocaleString(), riskScore: 2.1 },
         { name: "MoveVM", symbol: "MOVE", balance: "1250", value: (1250 * 0.85).toLocaleString(), riskScore: 5.8 },
-        { name: "IOTA", symbol: "MIOTA", balance: "500", value: (500 * 0.42).toLocaleString(), riskScore: 4.2 }
+        { name: "IOTA", symbol: "MIOTA", balance: "500", value: (500 * 0.42).toLocaleString(), riskScore: 4.2 },
+        { name: "Solana", symbol: "SOL", balance: "8.5", value: (8.5 * 110).toLocaleString(), riskScore: 3.8 },
+        { name: "Cardano", symbol: "ADA", balance: "2500", value: (2500 * 0.45).toLocaleString(), riskScore: 3.5 },
+        { name: "Polkadot", symbol: "DOT", balance: "75", value: (75 * 6).toLocaleString(), riskScore: 4.0 }
       ];
       setWalletTokens(fallbackTokens);
     } finally {
@@ -208,10 +239,25 @@ const Dashboard = () => {
               <p className="text-slate-600 mb-6 max-w-md mx-auto">
                 Connect your cryptocurrency wallet to view your portfolio and analyze risks.
               </p>
-              <Button onClick={connectWallet} className="gradient-bg-secondary">
-                <Wallet className="h-4 w-4 mr-2" />
-                Connect Wallet
-              </Button>
+              
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Button onClick={connectWallet} className="gradient-bg-secondary">
+                  <Wallet className="h-4 w-4 mr-2" />
+                  Connect Wallet
+                </Button>
+                
+                <Button onClick={connectMetaMask} variant="outline">
+                  MetaMask
+                </Button>
+                
+                <Button onClick={connectWalletConnect} variant="outline">
+                  WalletConnect
+                </Button>
+                
+                <Button onClick={connectCoinbaseWallet} variant="outline">
+                  Coinbase Wallet
+                </Button>
+              </div>
             </div>
           )}
         </div>

@@ -4,6 +4,8 @@ import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAccount, useConnect, useDisconnect, useBalance, useNetwork } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 
 // Define the AppKit type for the global window object
 type AppKit = {
@@ -23,6 +25,8 @@ interface WalletContextType {
   isConnecting: boolean;
   connectWallet: () => void;
   connectMetaMask: () => void;
+  connectWalletConnect: () => void;
+  connectCoinbaseWallet: () => void;
   disconnectWallet: () => void;
   balance: string;
   chainId: number | undefined;
@@ -35,6 +39,8 @@ const WalletContext = createContext<WalletContextType>({
   isConnecting: false,
   connectWallet: () => {},
   connectMetaMask: () => {},
+  connectWalletConnect: () => {},
+  connectCoinbaseWallet: () => {},
   disconnectWallet: () => {},
   balance: '0',
   chainId: undefined,
@@ -143,6 +149,74 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // WalletConnect connection method
+  const connectWalletConnect = async () => {
+    if (isConnecting) return;
+    
+    setIsConnecting(true);
+    try {
+      console.log("Attempting to connect with WalletConnect...");
+      
+      // Find the WalletConnect connector
+      const walletConnectConnector = connectors.find(
+        connector => connector instanceof WalletConnectConnector
+      );
+      
+      if (!walletConnectConnector) {
+        console.error("WalletConnect connector not found");
+        toast.error("WalletConnect not available");
+        return;
+      }
+      
+      // Connect using WalletConnect
+      const result = await connectAsync({ connector: walletConnectConnector });
+      console.log("WalletConnect connection result:", result);
+      
+      if (result?.account) {
+        toast.success("WalletConnect connected successfully!");
+      }
+    } catch (error) {
+      console.error("Error connecting with WalletConnect:", error);
+      toast.error("Failed to connect with WalletConnect. Please try again.");
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  // Coinbase Wallet connection method
+  const connectCoinbaseWallet = async () => {
+    if (isConnecting) return;
+    
+    setIsConnecting(true);
+    try {
+      console.log("Attempting to connect with Coinbase Wallet...");
+      
+      // Find the Coinbase Wallet connector
+      const coinbaseConnector = connectors.find(
+        connector => connector instanceof CoinbaseWalletConnector
+      );
+      
+      if (!coinbaseConnector) {
+        console.error("Coinbase Wallet connector not found");
+        toast.error("Coinbase Wallet connector not available");
+        return;
+      }
+      
+      // Connect using Coinbase Wallet
+      const result = await connectAsync({ connector: coinbaseConnector });
+      console.log("Coinbase Wallet connection result:", result);
+      
+      if (result?.account) {
+        toast.success("Coinbase Wallet connected successfully!");
+      }
+    } catch (error) {
+      console.error("Error connecting with Coinbase Wallet:", error);
+      toast.error("Failed to connect Coinbase Wallet. Please try again.");
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   const disconnectWallet = () => {
     try {
       disconnect();
@@ -168,6 +242,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         isConnecting,
         connectWallet,
         connectMetaMask,
+        connectWalletConnect,
+        connectCoinbaseWallet,
         disconnectWallet,
         balance: balance,
         chainId,
