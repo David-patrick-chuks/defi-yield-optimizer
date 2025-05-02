@@ -21,15 +21,22 @@ export function SupportBot() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('messages');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
+    // Focus the input when chat opens
+    setTimeout(() => {
+      if (inputRef.current && !isOpen) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     
-    if (!message.trim()) return;
+    if (!message.trim() || isLoading) return;
     
     // Add user message to chat
     const userMessage = {
@@ -38,20 +45,29 @@ export function SupportBot() {
       timestamp: new Date().toISOString()
     };
     
-    setChatHistory(prev => [...prev, userMessage]);
+    // Clear input field immediately for better UX
+    const currentMessage = message;
     setMessage('');
+    
+    // Update chat with user message
+    setChatHistory(prev => [...prev, userMessage]);
     setIsLoading(true);
     
     try {
       // Send message to backend API
-      const response = await api.sendMessage(message, chatHistory);
+      const response = await api.sendMessage(currentMessage, chatHistory);
       
-      // Add response to chat - Note: not repeating the user message here
+      // Add bot response to chat
       setChatHistory(prev => [...prev, {
         role: 'assistant',
         content: response.response,
         timestamp: response.timestamp
       }]);
+      
+      // Switch to messages tab if user is on a different tab
+      if (activeTab !== 'messages') {
+        setActiveTab('messages');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error('Failed to get a response. Please try again.');
@@ -64,6 +80,12 @@ export function SupportBot() {
       }]);
     } finally {
       setIsLoading(false);
+      // Re-focus the input after sending
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
     }
   };
 
@@ -174,6 +196,7 @@ export function SupportBot() {
             <form onSubmit={handleSendMessage} className="border-t border-slate-200 p-3">
               <div className="flex items-center gap-2">
                 <Input
+                  ref={inputRef}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Ask about SafeSage..."
@@ -232,7 +255,7 @@ export function SupportBot() {
           </div>
           
           {/* Tab navigation */}
-          <Tabs defaultValue="messages" className="w-full" onValueChange={(value) => setActiveTab(value)}>
+          <Tabs value={activeTab} className="w-full" onValueChange={(value) => setActiveTab(value)}>
             <div className="border-b border-slate-200">
               <TabsList className="w-full bg-transparent justify-between px-2">
                 <TabsTrigger value="home" className="flex items-center data-[state=active]:bg-transparent data-[state=active]:text-sage-600">
