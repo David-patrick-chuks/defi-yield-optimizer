@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 
 import { createAppKit } from "@reown/appkit";
+import { projectId, metadata, networks, ethersAdapter } from './config/index';
 
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -17,35 +18,14 @@ import Disclaimer from "./pages/Disclaimer";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
+import WalletDemo from "./pages/WalletDemo";
 
-// 🆔 Reown Project ID
-const projectId = 'b416daa29430acf394a8a82ba73e007f';
-
-// Set metadata for appkit
-const metadata = {
-  name: 'SafeSage',
-  description: 'Your AI Guide for DeFi Risk',
-  url: 'https://safesage.com',
-  icons: ['https://safesage.com/icon.png']
-};
-
-// Initialize Reown AppKit with chain configurations
+// Initialize Reown AppKit
 const modal = createAppKit({
   projectId,
-  // Define networks directly without using wagmi/chains imports
-  networks: [
-    {
-      id: 1, // Ethereum Mainnet
-      name: 'Ethereum',
-      rpcUrls: ['https://eth-mainnet.public.blastapi.io']
-    },
-    {
-      id: 42161, // Arbitrum
-      name: 'Arbitrum',
-      rpcUrls: ['https://arb1.arbitrum.io/rpc']
-    }
-  ],
+  networks,
   metadata,
+  adapters: [ethersAdapter],
   features: {
     email: true,
     socials: [
@@ -89,6 +69,7 @@ const App = () => {
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/wallet-demo" element={<WalletDemo />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </WalletProvider>
