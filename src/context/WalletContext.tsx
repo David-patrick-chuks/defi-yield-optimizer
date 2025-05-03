@@ -5,7 +5,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { AppKit } from '@reown/appkit';
 import { ethers } from 'ethers';
 import { 
-  useAppKit, 
   useAppKitAccount, 
   useAppKitNetwork, 
   useAppKitNetworkCore, 
@@ -43,7 +42,6 @@ export const useWallet = () => useContext(WalletContext);
 
 export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
   // Use AppKit React hooks
-  const { open, close } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { chainId } = useAppKitNetworkCore();
   const { walletProvider } = useAppKitProvider('eip155');
@@ -106,7 +104,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     setIsConnecting(true);
     try {
       console.log("Opening Reown AppKit modal...");
-      await open();
+      await appKit.open();
     } catch (error) {
       console.error("Error in connectWallet:", error);
       toast.error("Failed to connect wallet. Please try again.");
@@ -117,7 +115,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
 
   const disconnectWallet = () => {
     try {
-      close();
+      appKit.close();
       toast.success("Wallet disconnected");
     } catch (error) {
       console.error("Error disconnecting wallet:", error);

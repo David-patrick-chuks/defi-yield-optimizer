@@ -20,7 +20,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 // Initialize Reown AppKit
-const modal = createAppKit({
+const appKit = createAppKit({
   projectId,
   networks,
   metadata,
@@ -46,7 +46,7 @@ const modal = createAppKit({
 
 // Store AppKit instance globally
 if (typeof window !== "undefined") {
-  (window as any).reownAppKit = modal;
+  (window as any).reownAppKit = appKit;
 }
 
 const queryClient = new QueryClient();
@@ -56,7 +56,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
-          <WalletProvider appKit={modal}>
+          <WalletProvider appKit={appKit}>
             <Toaster />
             <Sonner />
             <Routes>
