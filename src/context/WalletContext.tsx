@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -97,15 +96,17 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
       }
     };
     
-    // Use the SDK's event emitter method if available
+    // Use the SDK's event emitter method
+    let unsubscribe: (() => void) | undefined;
+    
     if (typeof appKit.subscribeEvents === 'function') {
-      appKit.subscribeEvents(accountChangeHandler);
+      unsubscribe = appKit.subscribeEvents(accountChangeHandler);
     }
     
     return () => {
-      // Cleanup if needed
-      if (typeof appKit.unsubscribeEvents === 'function') {
-        appKit.unsubscribeEvents(accountChangeHandler);
+      // Cleanup event subscription if it exists
+      if (unsubscribe && typeof unsubscribe === 'function') {
+        unsubscribe();
       }
     };
   }, [appKit]);
