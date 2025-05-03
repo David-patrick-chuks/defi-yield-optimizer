@@ -46,7 +46,6 @@ const Navbar = () => {
             <Link to="/report" className="text-slate-600 hover:text-slate-900">Reports</Link>
             <Link to="/compare" className="text-slate-600 hover:text-slate-900">Compare</Link>
             <Link to="/about" className="text-slate-600 hover:text-slate-900">About</Link>
-            <Link to="/wallet-demo" className="text-slate-600 hover:text-slate-900">Wallet Demo</Link>
             
             <Button 
               className={isConnected ? "bg-sage-500 hover:bg-sage-600" : "gradient-bg-secondary"} 
@@ -103,13 +102,6 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               About
-            </Link>
-            <Link 
-              to="/wallet-demo" 
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100"
-              onClick={() => setIsOpen(false)}
-            >
-              Wallet Demo
             </Link>
             
             <div className="pt-2 px-3">

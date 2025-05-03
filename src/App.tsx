@@ -18,7 +18,6 @@ import Disclaimer from "./pages/Disclaimer";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
-import WalletDemo from "./pages/WalletDemo";
 
 // Initialize Reown AppKit
 const modal = createAppKit({
@@ -69,7 +68,6 @@ const App = () => {
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/wallet-demo" element={<WalletDemo />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </WalletProvider>
