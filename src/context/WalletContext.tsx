@@ -73,7 +73,8 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     const updateBalance = async () => {
       if (isConnected && address && walletProvider) {
         try {
-          const provider = new ethers.BrowserProvider(walletProvider);
+          // Fix for TS2345: Explicitly type assert walletProvider as ethers expects
+          const provider = new ethers.BrowserProvider(walletProvider as ethers.Eip1193Provider);
           const balanceResult = await provider.getBalance(address);
           if (balanceResult) {
             const formattedBalance = ethers.formatEther(balanceResult);
@@ -134,7 +135,8 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
         connectWallet,
         disconnectWallet,
         balance,
-        chainId,
+        // Fix for TS2322: Ensure chainId is always a number or undefined
+        chainId: typeof chainId === 'number' ? chainId : undefined,
         isMetaMaskInstalled
       }}
     >
