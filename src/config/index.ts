@@ -56,6 +56,62 @@ export const networks: [any, ...any[]] = [
       symbol: 'ETH',
       decimals: 18
     }
+  },
+  {
+    id: 148,
+    name: 'ShimmerEVM',
+    rpcUrls: {
+      default: {
+        http: ['https://json-rpc.evm.testnet.shimmer.network']
+      }
+    },
+    nativeCurrency: {
+      name: 'SMR',
+      symbol: 'SMR',
+      decimals: 18
+    }
+  },
+  {
+    id: 137,
+    name: 'Polygon',
+    rpcUrls: {
+      default: {
+        http: ['https://polygon-rpc.com']
+      }
+    },
+    nativeCurrency: {
+      name: 'MATIC',
+      symbol: 'MATIC',
+      decimals: 18
+    }
+  },
+  {
+    id: 8453,
+    name: 'Base',
+    rpcUrls: {
+      default: {
+        http: ['https://mainnet.base.org']
+      }
+    },
+    nativeCurrency: {
+      name: 'ETH',
+      symbol: 'ETH',
+      decimals: 18
+    }
+  },
+  {
+    id: 10,
+    name: 'Optimism',
+    rpcUrls: {
+      default: {
+        http: ['https://mainnet.optimism.io']
+      }
+    },
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18
+    }
   }
 ] as [any, ...any[]];
 
