@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TokenCard from '@/components/ui/TokenCard';
@@ -41,7 +40,7 @@ const SUPPORTED_TOKENS = [
 ];
 
 const Dashboard = () => {
-  const { isConnected, address, connectWallet, connectMetaMask, connectWalletConnect, connectCoinbaseWallet, balance, chainId } = useWallet();
+  const { isConnected, address, connectWallet, balance, chainId } = useWallet();
   const [walletTokens, setWalletTokens] = useState<TokenData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -244,18 +243,6 @@ const Dashboard = () => {
                 <Button onClick={connectWallet} className="gradient-bg-secondary">
                   <Wallet className="h-4 w-4 mr-2" />
                   Connect Wallet
-                </Button>
-                
-                <Button onClick={connectMetaMask} variant="outline">
-                  MetaMask
-                </Button>
-                
-                <Button onClick={connectWalletConnect} variant="outline">
-                  WalletConnect
-                </Button>
-                
-                <Button onClick={connectCoinbaseWallet} variant="outline">
-                  Coinbase Wallet
                 </Button>
               </div>
             </div>

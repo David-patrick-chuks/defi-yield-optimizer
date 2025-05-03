@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AppKit, AccountInfo } from '@reown/appkit';
+import { AppKit } from '@reown/appkit';
 import { ethers } from 'ethers';
 
 interface WalletContextType {
@@ -66,7 +66,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     const checkConnection = async () => {
       try {
         const account = await appKit.getAccount();
-        if (account) {
+        if (account && account.address) {
           handleAccountChange(account);
         }
       } catch (error) {
@@ -77,9 +77,9 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     checkConnection();
     
     // Set up listeners for connection events
-    const onAccountChange = (account: AccountInfo | null) => {
+    const accountChangeHandler = (account: any) => {
       console.log("Account changed:", account);
-      if (account) {
+      if (account && account.address) {
         handleAccountChange(account);
       } else {
         setIsConnected(false);
@@ -89,15 +89,23 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
       }
     };
     
-    appKit.on('accountChange', onAccountChange);
+    // Use the SDK's event emitter method if available
+    if (appKit.subscribeEvents) {
+      appKit.subscribeEvents({
+        update: accountChangeHandler
+      });
+    }
     
     return () => {
-      appKit.off('accountChange', onAccountChange);
+      // Cleanup if needed
+      if (appKit.unsubscribeEvents) {
+        appKit.unsubscribeEvents();
+      }
     };
   }, [appKit]);
   
   // Handle account info changes
-  const handleAccountChange = async (account: AccountInfo) => {
+  const handleAccountChange = async (account: any) => {
     if (!account || !account.address) {
       setIsConnected(false);
       setAddress(undefined);
@@ -106,18 +114,23 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     
     setAddress(account.address);
     setIsConnected(true);
-    setChainId(account.chainId);
+    
+    if (account.chainId) {
+      setChainId(Number(account.chainId));
+    }
     
     // Fetch balance
     try {
       const provider = await appKit.getProvider();
       if (provider) {
-        const balance = await provider.getBalance(account.address);
-        const formattedBalance = ethers.formatEther(balance);
+        // Use provider to get balance for the connected address
+        const balanceResult = await provider.getBalance(account.address);
+        const formattedBalance = ethers.formatEther(balanceResult);
         setBalance(parseFloat(formattedBalance).toFixed(4));
       }
     } catch (error) {
       console.error("Error fetching balance:", error);
+      setBalance('0');
     }
   };
 
@@ -127,7 +140,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     setIsConnecting(true);
     try {
       console.log("Opening Reown AppKit modal...");
-      appKit.open();
+      await appKit.connect();
     } catch (error) {
       console.error("Error in connectWallet:", error);
       toast.error("Failed to connect wallet. Please try again.");

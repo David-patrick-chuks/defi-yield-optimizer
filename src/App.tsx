@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 
 import { createAppKit } from "@reown/appkit";
-import { ethersAdapter } from "@reown/appkit-adapter-ethers";
 import { mainnet, arbitrum } from "wagmi/chains";
 
 import Index from "./pages/Index";
@@ -33,7 +32,6 @@ const metadata = {
 
 // Initialize Reown AppKit
 const modal = createAppKit({
-  adapters: [ethersAdapter()],
   projectId,
   networks: [mainnet, arbitrum],
   metadata,
