@@ -11,22 +11,34 @@ export const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/179229932']
 };
 
-// Define networks directly here instead of importing
+// Define networks with the correct structure
 export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
   {
     id: 1,
     name: 'Ethereum',
-    rpcUrls: ['https://eth-mainnet.public.blastapi.io']
+    rpcUrls: {
+      default: {
+        http: ['https://eth-mainnet.public.blastapi.io']
+      }
+    }
   },
   {
     id: 42161,
     name: 'Arbitrum',
-    rpcUrls: ['https://arb1.arbitrum.io/rpc']
+    rpcUrls: {
+      default: {
+        http: ['https://arb1.arbitrum.io/rpc']
+      }
+    }
   },
   {
     id: 11155111,
     name: 'Sepolia',
-    rpcUrls: ['https://rpc.sepolia.org']
+    rpcUrls: {
+      default: {
+        http: ['https://rpc.sepolia.org']
+      }
+    }
   }
 ] as [AppKitNetwork, ...AppKitNetwork[]];
 

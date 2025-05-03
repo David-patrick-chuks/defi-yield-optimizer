@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -120,8 +119,8 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     
     // Fetch balance
     try {
-      // Pass the correct chainId parameter
-      const provider = await appKit.getProvider({ chainId: account.chainId });
+      // Use correct namespace parameter for getProvider
+      const provider = await appKit.getProvider('eip155');
       if (provider) {
         try {
           // Use ethers to get balance for the connected address
