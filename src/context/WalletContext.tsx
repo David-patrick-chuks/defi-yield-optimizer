@@ -120,13 +120,13 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     
     // Fetch balance
     try {
-      // Pass the chain ID correctly within an object for the namespace
-      const provider = await appKit.getProvider();
+      // Specify the chain ID when getting the provider
+      const provider = await appKit.getProvider({ chainId: account.chainId });
       if (provider) {
         try {
           // Use ethers to get balance for the connected address
           // We need to cast the provider to an ethers provider type
-          const ethersProvider = provider as ethers.providers.Provider;
+          const ethersProvider = provider as ethers.Provider;
           const balanceResult = await ethersProvider.getBalance(account.address);
           if (balanceResult) {
             const formattedBalance = ethers.formatEther(balanceResult);
