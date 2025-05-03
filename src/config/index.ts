@@ -1,5 +1,5 @@
 
-import type { AppKitNetwork } from '@reown/appkit';
+import type { AppKitNetwork } from '@reown/appkit/networks';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 
 export const projectId = "b416daa29430acf394a8a82ba73e007f";
