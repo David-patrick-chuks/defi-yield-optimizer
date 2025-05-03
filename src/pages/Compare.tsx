@@ -93,13 +93,13 @@ const Compare = () => {
                 value: 2.5,
               }}
               tokenB={{
-                name: "TokenXYZ",
-                symbol: "XYZ",
-                value: 8.7,
+                name: "Bitcoin",
+                symbol: "BTC",
+                value: 2.1,
               }}
-              isBetter="A"
+              isBetter="B"
               metric="Risk Score"
-              explanation="Ethereum has significantly lower market risk due to its large market cap, high trading volume, and established history. TokenXYZ has much higher volatility and lower liquidity."
+              explanation="Bitcoin has a slightly lower market risk due to its larger market cap and established position as a store of value. Ethereum has slightly higher volatility due to its smart contract platform exposure."
             />
             
             <ComparisonCard
@@ -110,13 +110,13 @@ const Compare = () => {
                 value: 3.1,
               }}
               tokenB={{
-                name: "TokenXYZ",
-                symbol: "XYZ",
-                value: 7.5,
+                name: "Bitcoin",
+                symbol: "BTC",
+                value: 2.5,
               }}
-              isBetter="A"
+              isBetter="B"
               metric="Risk Score"
-              explanation="Ethereum has a robust, widely tested codebase with thousands of developers and regular security audits. TokenXYZ has a smaller development team and less rigorous security testing."
+              explanation="Bitcoin has a simpler code architecture focused on security and reliability. Ethereum has higher technical complexity due to its smart contract functionality."
             />
             
             <ComparisonCard
@@ -127,26 +127,26 @@ const Compare = () => {
                 value: 1.8,
               }}
               tokenB={{
-                name: "TokenXYZ",
-                symbol: "XYZ",
-                value: 8.9,
+                name: "Bitcoin",
+                symbol: "BTC",
+                value: 1.6,
               }}
-              isBetter="A"
+              isBetter="B"
               metric="Risk Score"
-              explanation="Ethereum has extremely high liquidity across multiple exchanges and trading pairs. TokenXYZ has limited trading volume and could face liquidity issues during market stress."
+              explanation="Both Bitcoin and Ethereum have extremely high liquidity across multiple exchanges and trading pairs. Bitcoin has slightly higher trading volume and broader global acceptance."
             />
             
             <div className="p-6 bg-sage-50 border border-sage-200 rounded-lg">
               <h3 className="font-medium text-sage-800 mb-3">AI Summary Assessment</h3>
               <p className="text-sage-700 mb-4">
-                Based on comprehensive analysis across all risk metrics, <strong>Ethereum (ETH)</strong> presents a significantly lower risk profile compared to TokenXYZ (XYZ). If safety is a primary concern for your investment strategy, Ethereum is the recommended choice.
+                Based on comprehensive analysis across all risk metrics, <strong>Bitcoin (BTC)</strong> presents a slightly lower overall risk profile compared to Ethereum (ETH). However, both are established assets with strong fundamentals and relatively low risk compared to newer cryptocurrencies.
               </p>
               <div className="flex gap-2">
                 <div className="px-3 py-1.5 rounded-full bg-risk-low text-sage-800 text-sm font-medium">
-                  Ethereum: Low Risk (2.5/10)
+                  Bitcoin: Low Risk (2.1/10)
                 </div>
-                <div className="px-3 py-1.5 rounded-full bg-risk-high text-red-800 text-sm font-medium">
-                  TokenXYZ: High Risk (8.7/10)
+                <div className="px-3 py-1.5 rounded-full bg-risk-low text-sage-800 text-sm font-medium">
+                  Ethereum: Low Risk (2.5/10)
                 </div>
               </div>
             </div>

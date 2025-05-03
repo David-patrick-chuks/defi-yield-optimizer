@@ -8,7 +8,8 @@ import {
   useAppKitAccount, 
   useAppKitNetwork, 
   useAppKitNetworkCore, 
-  useAppKitProvider 
+  useAppKitProvider,
+  useDisconnect
 } from '@reown/appkit/react';
 
 interface WalletContextType {
@@ -45,6 +46,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
   const { address, isConnected } = useAppKitAccount();
   const { chainId } = useAppKitNetworkCore();
   const { walletProvider } = useAppKitProvider('eip155');
+  const { disconnect } = useDisconnect();
 
   const [balance, setBalance] = useState('0');
   const [isConnecting, setIsConnecting] = useState(false);
@@ -115,6 +117,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
 
   const disconnectWallet = () => {
     try {
+      disconnect();
       appKit.close();
       toast.success("Wallet disconnected");
     } catch (error) {

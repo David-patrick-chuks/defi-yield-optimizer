@@ -13,6 +13,7 @@ interface SimpleToken {
   name: string;
   symbol: string;
   riskScore: number;
+  logoUrl?: string;
 }
 
 const Index = () => {
@@ -20,13 +21,50 @@ const Index = () => {
   const [tokens, setTokens] = useState<SimpleToken[]>([
     { name: "Ethereum", symbol: "ETH", riskScore: 2.5 },
     { name: "Bitcoin", symbol: "BTC", riskScore: 2.1 },
-    { name: "TokenXYZ", symbol: "XYZ", riskScore: 8.7 }
+    { name: "Solana", symbol: "SOL", riskScore: 3.8 }
   ]);
   
   const handleConnectClick = () => {
     if (isConnected || isConnecting) return;
     connectWallet();
   };
+
+  // Get real-time token data
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      try {
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum,bitcoin,solana&order=market_cap_desc'
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (Array.isArray(data) && data.length > 0) {
+            const updatedTokens = tokens.map(token => {
+              const marketData = data.find(
+                (item: any) => item.symbol.toLowerCase() === token.symbol.toLowerCase()
+              );
+              
+              if (marketData) {
+                return {
+                  ...token,
+                  logoUrl: marketData.image
+                };
+              }
+              return token;
+            });
+            
+            setTokens(updatedTokens);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching token market data:", error);
+      }
+    };
+    
+    fetchMarketData();
+  }, []);
 
   // Redirect to dashboard if already connected
   useEffect(() => {
@@ -87,8 +125,12 @@ const Index = () => {
                   {tokens.map((token) => (
                     <div key={token.symbol} className="flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sm">
-                          {token.symbol}
+                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden">
+                          {token.logoUrl ? (
+                            <img src={token.logoUrl} alt={token.symbol} className="h-6 w-6" />
+                          ) : (
+                            <span className="text-sm">{token.symbol}</span>
+                          )}
                         </div>
                         <div>
                           <p className="font-medium">{token.name}</p>
