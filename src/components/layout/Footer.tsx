@@ -18,7 +18,7 @@ const Footer = () => {
             <div className="flex space-x-4 pt-2">
               <a href="#" className="text-slate-400 hover:text-slate-600">
                 <Twitter size={18} />
-                <span className="sr-only">Twitter</span>
+                <span className="sr-only">https://x.com/thesafesage</span>
               </a>
               <a href="#" className="text-slate-400 hover:text-slate-600">
                 <Github size={18} />
