@@ -1,26 +1,37 @@
-
-import { useState } from 'react';
-import MainLayout from '@/components/layout/MainLayout';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
-import ComparisonCard from '@/components/ui/ComparisonCard';
-import LoadingAI from '@/components/ui/LoadingAI';
+import { useState } from "react";
+import MainLayout from "@/components/layout/MainLayout";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
+import ComparisonCard from "@/components/ui/ComparisonCard";
+import LoadingAI from "@/components/ui/LoadingAI";
+import { compareTokensWithAI } from "@/services/openai";
 
 const Compare = () => {
-  const [tokenA, setTokenA] = useState('');
-  const [tokenB, setTokenB] = useState('');
+  const [tokenA, setTokenA] = useState("");
+  const [tokenB, setTokenB] = useState("");
   const [isComparing, setIsComparing] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
-  
-  const handleCompare = (e: React.FormEvent) => {
+  const [comparisonData, setComparisonData] = useState(null);
+
+  const handleCompare = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (tokenA && tokenB) {
-      setIsComparing(true);
-      setTimeout(() => {
-        setIsComparing(false);
-        setShowComparison(true);
-      }, 2000);
+    const cleanTokenA = tokenA.trim();
+    const cleanTokenB = tokenB.trim();
+    if (!cleanTokenA || !cleanTokenB) return;
+  
+    setIsComparing(true);
+    setShowComparison(false);
+  
+    try {
+      const result = await compareTokensWithAI(cleanTokenA, cleanTokenB);
+      setComparisonData(result); // Save the response
+      setShowComparison(true);
+    } catch (err) {
+      console.error("Comparison error:", err);
+      alert("Failed to fetch comparison. Please try again.");
+    } finally {
+      setIsComparing(false);
     }
   };
   
@@ -28,12 +39,17 @@ const Compare = () => {
     <MainLayout isConnected={true}>
       <div className="safe-container py-8">
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-6">
-          <h1 className="text-2xl font-bold text-slate-800 mb-6">Compare Tokens</h1>
-          
+          <h1 className="text-2xl font-bold text-slate-800 mb-6">
+            Compare Tokens
+          </h1>
+
           <form onSubmit={handleCompare}>
             <div className="grid md:grid-cols-2 gap-4 mb-6">
               <div>
-                <label htmlFor="tokenA" className="block text-sm font-medium text-slate-700 mb-1">
+                <label
+                  htmlFor="tokenA"
+                  className="block text-sm font-medium text-slate-700 mb-1"
+                >
                   First Token
                 </label>
                 <Input
@@ -45,7 +61,10 @@ const Compare = () => {
                 />
               </div>
               <div>
-                <label htmlFor="tokenB" className="block text-sm font-medium text-slate-700 mb-1">
+                <label
+                  htmlFor="tokenB"
+                  className="block text-sm font-medium text-slate-700 mb-1"
+                >
                   Second Token
                 </label>
                 <Input
@@ -57,8 +76,8 @@ const Compare = () => {
                 />
               </div>
             </div>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={!tokenA || !tokenB || isComparing}
               className="gradient-bg-secondary w-full md:w-auto"
             >
@@ -74,79 +93,97 @@ const Compare = () => {
           </div>
         )}
 
-        {showComparison && !isComparing && (
+        {showComparison && comparisonData && (
           <div className="space-y-6">
             <div className="p-5 bg-slate-50 border border-slate-200 rounded-lg">
               <h2 className="font-medium text-slate-800 mb-3">
                 Comparison: {tokenA} vs {tokenB}
               </h2>
               <p className="text-slate-600 text-sm">
-                SafeSage AI has analyzed both tokens across several risk metrics. The safer option in each category is highlighted.
+                SafeSage AI has analyzed both tokens across several risk
+                metrics. The safer option in each category is highlighted.
               </p>
             </div>
-            
+
             <ComparisonCard
               title="Market Risk"
               tokenA={{
-                name: "Ethereum",
-                symbol: "ETH",
-                value: 2.5,
+                name: comparisonData.marketRisk.tokenA.name,
+                symbol: tokenA,
+                value: comparisonData.marketRisk.tokenA.score,
               }}
               tokenB={{
-                name: "Bitcoin",
-                symbol: "BTC",
-                value: 2.1,
+                name: comparisonData.marketRisk.tokenB.name,
+                symbol: tokenB,
+                value: comparisonData.marketRisk.tokenB.score,
               }}
-              isBetter="B"
+              isBetter={
+                comparisonData.marketRisk.tokenA.score <
+                comparisonData.marketRisk.tokenB.score
+                  ? "A"
+                  : "B"
+              }
               metric="Risk Score"
-              explanation="Bitcoin has a slightly lower market risk due to its larger market cap and established position as a store of value. Ethereum has slightly higher volatility due to its smart contract platform exposure."
+              explanation={comparisonData.marketRisk.explanation}
             />
-            
+
             <ComparisonCard
               title="Technical Risk"
               tokenA={{
-                name: "Ethereum",
-                symbol: "ETH",
-                value: 3.1,
+                name: comparisonData.technicalRisk.tokenA.name,
+                symbol: tokenA,
+                value: comparisonData.technicalRisk.tokenA.score,
               }}
               tokenB={{
-                name: "Bitcoin",
-                symbol: "BTC",
-                value: 2.5,
+                name: comparisonData.technicalRisk.tokenB.name,
+                symbol: tokenB,
+                value: comparisonData.technicalRisk.tokenB.score,
               }}
-              isBetter="B"
+              isBetter={
+                comparisonData.technicalRisk.tokenA.score <
+                comparisonData.technicalRisk.tokenB.score
+                  ? "A"
+                  : "B"
+              }
               metric="Risk Score"
-              explanation="Bitcoin has a simpler code architecture focused on security and reliability. Ethereum has higher technical complexity due to its smart contract functionality."
+              explanation={comparisonData.technicalRisk.explanation}
             />
-            
+
             <ComparisonCard
               title="Liquidity Risk"
               tokenA={{
-                name: "Ethereum",
-                symbol: "ETH",
-                value: 1.8,
+                name: comparisonData.liquidityRisk.tokenA.name,
+                symbol: tokenA,
+                value: comparisonData.liquidityRisk.tokenA.score,
               }}
               tokenB={{
-                name: "Bitcoin",
-                symbol: "BTC",
-                value: 1.6,
+                name: comparisonData.liquidityRisk.tokenB.name,
+                symbol: tokenB,
+                value: comparisonData.liquidityRisk.tokenB.score,
               }}
-              isBetter="B"
+              isBetter={
+                comparisonData.liquidityRisk.tokenA.score <
+                comparisonData.liquidityRisk.tokenB.score
+                  ? "A"
+                  : "B"
+              }
               metric="Risk Score"
-              explanation="Both Bitcoin and Ethereum have extremely high liquidity across multiple exchanges and trading pairs. Bitcoin has slightly higher trading volume and broader global acceptance."
+              explanation={comparisonData.liquidityRisk.explanation}
             />
-            
+
             <div className="p-6 bg-sage-50 border border-sage-200 rounded-lg">
-              <h3 className="font-medium text-sage-800 mb-3">AI Summary Assessment</h3>
-              <p className="text-sage-700 mb-4">
-                Based on comprehensive analysis across all risk metrics, <strong>Bitcoin (BTC)</strong> presents a slightly lower overall risk profile compared to Ethereum (ETH). However, both are established assets with strong fundamentals and relatively low risk compared to newer cryptocurrencies.
-              </p>
+              <h3 className="font-medium text-sage-800 mb-3">
+                AI Summary Assessment
+              </h3>
+              <p className="text-sage-700 mb-4">{comparisonData.summary}</p>
               <div className="flex gap-2">
                 <div className="px-3 py-1.5 rounded-full bg-risk-low text-sage-800 text-sm font-medium">
-                  Bitcoin: Low Risk (2.1/10)
+                  {comparisonData.liquidityRisk.tokenA.name}:{" "}
+                  {comparisonData.liquidityRisk.tokenA.score}/10
                 </div>
                 <div className="px-3 py-1.5 rounded-full bg-risk-low text-sage-800 text-sm font-medium">
-                  Ethereum: Low Risk (2.5/10)
+                  {comparisonData.liquidityRisk.tokenB.name}:{" "}
+                  {comparisonData.liquidityRisk.tokenB.score}/10
                 </div>
               </div>
             </div>

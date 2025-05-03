@@ -1,5 +1,6 @@
 
-// OpenAI API service for AI risk analysis
+// src/services/openai.ts
+import { API_ENDPOINTS } from "@/config/api";
 
 // Using the provided API key
 const OPENAI_API_KEY = "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";
@@ -103,4 +104,25 @@ export const analyzeTokens = async (tokens: TokenData[]): Promise<TokenAnalysisR
     console.error("Error analyzing tokens with OpenAI:", error);
     throw new Error("Failed to analyze tokens with AI service");
   }
+};
+
+
+
+
+
+// src/services/openai.ts
+export const compareTokensWithAI = async (tokenA: string, tokenB: string) => {
+  const response = await fetch(API_ENDPOINTS.compareTokens, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ tokenA, tokenB }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get comparison from AI.");
+  }
+
+  return await response.json();
 };

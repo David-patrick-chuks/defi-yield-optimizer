@@ -1,10 +1,11 @@
-
 import { cn } from "@/lib/utils";
+import { useTokenLogo } from "@/hooks/useTokenLogo";
 
 interface TokenInfo {
   name: string;
   symbol: string;
   value: number;
+  logo?: string;
 }
 
 interface ComparisonCardProps {
@@ -24,6 +25,18 @@ const ComparisonCard = ({
   metric,
   explanation,
 }: ComparisonCardProps) => {
+  const tokenALogo = useTokenLogo(tokenA.symbol);
+  const tokenBLogo = useTokenLogo(tokenB.symbol);
+
+  const renderTokenAvatar = (logo: string | null, symbol: string) =>
+    logo ? (
+      <img src={logo} alt={symbol} className="w-8 h-8 rounded-full object-contain bg-white border" />
+    ) : (
+      <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium">
+        {symbol}
+      </div>
+    );
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
       <div className="p-4 border-b border-slate-100">
@@ -31,7 +44,8 @@ const ComparisonCard = ({
       </div>
       <div className="p-4">
         <div className="grid md:grid-cols-2 gap-4 mb-4">
-          <div 
+          {/* Token A */}
+          <div
             className={cn(
               "p-4 rounded-lg",
               isBetter === "A" ? "bg-sage-50 border border-sage-300" : "bg-slate-50 border border-slate-200"
@@ -39,9 +53,7 @@ const ComparisonCard = ({
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium">
-                  {tokenA.symbol}
-                </div>
+                {renderTokenAvatar(tokenALogo, tokenA.symbol)}
                 <span className="font-medium">{tokenA.name}</span>
               </div>
               {isBetter === "A" && (
@@ -52,18 +64,19 @@ const ComparisonCard = ({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-slate-500">{metric}</span>
-              <span className={cn(
-                "font-medium",
-                tokenA.value <= 3 ? "text-green-600" :
-                tokenA.value <= 6 ? "text-amber-600" :
-                "text-red-600"
-              )}>
+              <span
+                className={cn(
+                  "font-medium",
+                  tokenA.value <= 3 ? "text-green-600" : tokenA.value <= 6 ? "text-amber-600" : "text-red-600"
+                )}
+              >
                 {tokenA.value.toFixed(1)}
               </span>
             </div>
           </div>
-          
-          <div 
+
+          {/* Token B */}
+          <div
             className={cn(
               "p-4 rounded-lg",
               isBetter === "B" ? "bg-sage-50 border border-sage-300" : "bg-slate-50 border border-slate-200"
@@ -71,9 +84,7 @@ const ComparisonCard = ({
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium">
-                  {tokenB.symbol}
-                </div>
+                {renderTokenAvatar(tokenBLogo, tokenB.symbol)}
                 <span className="font-medium">{tokenB.name}</span>
               </div>
               {isBetter === "B" && (
@@ -84,22 +95,20 @@ const ComparisonCard = ({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-slate-500">{metric}</span>
-              <span className={cn(
-                "font-medium",
-                tokenB.value <= 3 ? "text-green-600" :
-                tokenB.value <= 6 ? "text-amber-600" :
-                "text-red-600"
-              )}>
+              <span
+                className={cn(
+                  "font-medium",
+                  tokenB.value <= 3 ? "text-green-600" : tokenB.value <= 6 ? "text-amber-600" : "text-red-600"
+                )}
+              >
                 {tokenB.value.toFixed(1)}
               </span>
             </div>
           </div>
         </div>
-        
+
         <div className="bg-slate-50 p-4 rounded-lg">
-          <p className="text-sm text-slate-600">
-            {explanation}
-          </p>
+          <p className="text-sm text-slate-600">{explanation}</p>
         </div>
       </div>
     </div>

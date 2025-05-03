@@ -4,7 +4,7 @@ import { Bot, SendHorizontal, X, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { api, ChatMessage } from '@/services/api';
+import { ChatMessage, sendMessage } from '@/services/api';
 import LoadingAI from '@/components/ui/LoadingAI';
 
 export function SupportBot() {
@@ -53,13 +53,13 @@ export function SupportBot() {
     
     try {
       // Send message to backend API
-      const response = await api.sendMessage(currentMessage, chatHistory);
+      const response = await sendMessage(currentMessage, chatHistory);
       
       // Add bot response to chat
       setChatHistory(prev => [...prev, {
         role: 'assistant',
         content: response.response,
-        timestamp: response.timestamp
+        timestamp: new Date().toISOString()
       }]);
     } catch (error) {
       console.error('Error sending message:', error);

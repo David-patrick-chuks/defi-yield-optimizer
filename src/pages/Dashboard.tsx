@@ -207,7 +207,7 @@ const Dashboard = () => {
       </div>
       
       {/* Add Support Bot Component */}
-      <SupportBot />
+   
     </MainLayout>
   );
 };

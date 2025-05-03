@@ -2,6 +2,7 @@
 import { ReactNode } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { SupportBot } from '../ui/support-bot';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ const MainLayout = ({ children, isConnected }: MainLayoutProps) => {
       <Navbar />
       <main className="flex-grow">{children}</main>
       <Footer />
+         <SupportBot />
     </div>
   );
 };
