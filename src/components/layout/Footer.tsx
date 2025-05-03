@@ -20,7 +20,10 @@ const Footer = () => {
                 <Twitter size={18} />
                 <span className="sr-only">Twitter</span>
               </a>
-              
+              <a href="#" className="text-slate-400 hover:text-slate-600">
+                <Github size={18} />
+                <span className="sr-only">GitHub</span>
+              </a>
             </div>
           </div>
           
