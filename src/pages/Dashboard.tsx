@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TokenCard from '@/components/ui/TokenCard';
@@ -149,7 +150,7 @@ const Dashboard = () => {
   
   // Fetch token data when wallet connects
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && address) {
       fetchTokenData();
     } else {
       setWalletTokens([]);

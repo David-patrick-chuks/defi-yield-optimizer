@@ -6,14 +6,35 @@ import StepCard from '@/components/ui/StepCard';
 import { Shield, TrendingUp, FileSearch, Link, Wallet } from 'lucide-react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useWallet } from '@/context/WalletContext';
+import { useEffect, useState } from 'react';
+
+// Simple token interface for landing page
+interface SimpleToken {
+  name: string;
+  symbol: string;
+  riskScore: number;
+}
 
 const Index = () => {
   const { connectWallet, isConnected, isConnecting } = useWallet();
+  const [tokens, setTokens] = useState<SimpleToken[]>([
+    { name: "Ethereum", symbol: "ETH", riskScore: 2.5 },
+    { name: "Bitcoin", symbol: "BTC", riskScore: 2.1 },
+    { name: "TokenXYZ", symbol: "XYZ", riskScore: 8.7 }
+  ]);
   
   const handleConnectClick = () => {
     if (isConnected || isConnecting) return;
     connectWallet();
   };
+
+  // Redirect to dashboard if already connected
+  useEffect(() => {
+    if (isConnected) {
+      // Optional: Redirect to dashboard after connecting
+      // window.location.href = '/dashboard';
+    }
+  }, [isConnected]);
   
   return (
     <MainLayout>
@@ -33,9 +54,14 @@ const Index = () => {
                 <Button 
                   className="gradient-bg-secondary text-white font-medium mr-4 px-6 py-5"
                   onClick={handleConnectClick}
-                  disabled={isConnecting || isConnected}
+                  disabled={isConnecting}
                 >
-                  {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet"}
+                  {isConnecting ? 
+                    "Connecting..." : 
+                    isConnected ? 
+                      <RouterLink to="/dashboard">View Dashboard</RouterLink> : 
+                      "Connect Wallet"
+                  }
                 </Button>
                 
                 <RouterLink to="/about">
@@ -58,58 +84,36 @@ const Index = () => {
                 </div>
                 
                 <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sm">
-                        ETH
+                  {tokens.map((token) => (
+                    <div key={token.symbol} className="flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sm">
+                          {token.symbol}
+                        </div>
+                        <div>
+                          <p className="font-medium">{token.name}</p>
+                          <p className="text-xs text-slate-500">
+                            {token.riskScore <= 3 ? "Low Risk" : 
+                             token.riskScore <= 6 ? "Moderate Risk" : "High Risk"}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">Ethereum</p>
-                        <p className="text-xs text-slate-500">Low Risk</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">2.5</p>
-                      <p className="text-xs text-slate-500">Risk Score</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sm">
-                        BTC
-                      </div>
-                      <div>
-                        <p className="font-medium">Bitcoin</p>
-                        <p className="text-xs text-slate-500">Low Risk</p>
+                      <div className="text-right">
+                        <p className="font-medium">{token.riskScore.toFixed(1)}</p>
+                        <p className="text-xs text-slate-500">Risk Score</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium">2.1</p>
-                      <p className="text-xs text-slate-500">Risk Score</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sm">
-                        XYZ
-                      </div>
-                      <div>
-                        <p className="font-medium">TokenXYZ</p>
-                        <p className="text-xs text-slate-500">High Risk</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">8.7</p>
-                      <p className="text-xs text-slate-500">Risk Score</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 
                 <div className="text-center">
-                  <RouterLink to="/dashboard">
-                    <Button className="w-full">View Full Analysis</Button>
+                  <RouterLink to={isConnected ? "/dashboard" : "/"}>
+                    <Button 
+                      className="w-full" 
+                      onClick={isConnected ? undefined : handleConnectClick}
+                    >
+                      {isConnected ? "View Full Analysis" : "Connect to View Analysis"}
+                    </Button>
                   </RouterLink>
                 </div>
               </div>
@@ -219,14 +223,25 @@ const Index = () => {
             Connect your wallet now and get immediate AI-powered insights into your portfolio's risk profile.
           </p>
           <div>
-            <Button 
-              className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
-              onClick={handleConnectClick}
-              disabled={isConnecting || isConnected}
-            >
-              <Wallet className="h-5 w-5 mr-2" />
-              {isConnecting ? "Connecting..." : isConnected ? "Wallet Connected" : "Connect Wallet & Start Analyzing"}
-            </Button>
+            {isConnected ? (
+              <RouterLink to="/dashboard">
+                <Button 
+                  className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
+                >
+                  <FileSearch className="h-5 w-5 mr-2" />
+                  View My Dashboard
+                </Button>
+              </RouterLink>
+            ) : (
+              <Button 
+                className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
+                onClick={handleConnectClick}
+                disabled={isConnecting}
+              >
+                <Wallet className="h-5 w-5 mr-2" />
+                {isConnecting ? "Connecting..." : "Connect Wallet & Start Analyzing"}
+              </Button>
+            )}
           </div>
         </div>
       </section>

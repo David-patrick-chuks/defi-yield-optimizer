@@ -65,9 +65,15 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     // Check if already connected
     const checkConnection = async () => {
       try {
+        console.log("Checking existing connection...");
         const account = await appKit.getAccount();
+        console.log("Connection check result:", account);
+        
         if (account && account.address) {
+          console.log("User already connected with address:", account.address);
           handleAccountChange(account);
+        } else {
+          console.log("No active wallet connection found");
         }
       } catch (error) {
         console.error("Error checking existing connection:", error);
@@ -83,6 +89,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
       if (account && account.address) {
         handleAccountChange(account);
       } else {
+        console.log("Wallet disconnected or account changed to none");
         setIsConnected(false);
         setAddress(undefined);
         setBalance('0');
@@ -97,8 +104,8 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     
     return () => {
       // Cleanup if needed
-      if (typeof appKit.subscribeEvents === 'function') {
-        // No explicit unsubscribe needed in newer versions
+      if (typeof appKit.unsubscribeEvents === 'function') {
+        appKit.unsubscribeEvents(accountChangeHandler);
       }
     };
   }, [appKit]);
@@ -131,6 +138,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
           if (balanceResult) {
             const formattedBalance = ethers.formatEther(balanceResult);
             setBalance(parseFloat(formattedBalance).toFixed(4));
+            console.log("Updated wallet balance:", formattedBalance);
           }
         } catch (balanceError) {
           console.error("Error in getBalance:", balanceError);
@@ -181,6 +189,7 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     }
   }, [isConnected, address]);
 
+  // Export state and functions
   return (
     <WalletContext.Provider
       value={{
