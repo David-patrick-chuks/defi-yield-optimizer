@@ -9,7 +9,7 @@ export const projectId = "b416daa29430acf394a8a82ba73e007f";
 export const metadata = {
   name: 'SafeSage',
   description: 'SafeSage – Your AI Guide for DeFi Risk',
-  url: 'http://localhost:8080',
+  url: 'https://safesage-main.vercel.app',
   icons: ['https://avatars.githubusercontent.com/u/179229932']
 };
 
