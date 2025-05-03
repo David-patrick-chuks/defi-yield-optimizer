@@ -17,7 +17,7 @@ interface ActionButtonListProps {
 }
 
 export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance }: ActionButtonListProps) => {
-  const { disconnect } = useAppKit();
+  const appKit = useAppKit();
   const { open } = useAppKit();
   const { chainId } = useAppKitNetworkCore();
   const { switchNetwork } = useAppKitNetwork();
@@ -26,7 +26,7 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance }: ActionB
 
   const handleDisconnect = async () => {
     try {
-      await disconnect();
+      await appKit.close();
     } catch (error) {
       console.error("Failed to disconnect:", error);
     }

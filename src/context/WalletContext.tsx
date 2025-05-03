@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -160,7 +161,8 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
 
   const disconnectWallet = () => {
     try {
-      appKit.disconnect();
+      // Using the close method instead of disconnect
+      appKit.close();
       setIsConnected(false);
       setAddress(undefined);
       setBalance('0');
