@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
 
 import { createAppKit } from "@reown/appkit";
-import { mainnet, arbitrum } from "wagmi/chains";
 
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -30,10 +29,22 @@ const metadata = {
   icons: ['https://safesage.com/icon.png']
 };
 
-// Initialize Reown AppKit
+// Initialize Reown AppKit with chain configurations
 const modal = createAppKit({
   projectId,
-  networks: [mainnet, arbitrum],
+  // Define networks directly without using wagmi/chains imports
+  networks: [
+    {
+      id: 1, // Ethereum Mainnet
+      name: 'Ethereum',
+      rpcUrl: 'https://eth-mainnet.public.blastapi.io'
+    },
+    {
+      id: 42161, // Arbitrum
+      name: 'Arbitrum',
+      rpcUrl: 'https://arb1.arbitrum.io/rpc'
+    }
+  ],
   metadata,
   features: {
     email: true,

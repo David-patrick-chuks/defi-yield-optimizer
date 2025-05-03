@@ -77,8 +77,9 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     checkConnection();
     
     // Set up listeners for connection events
-    const accountChangeHandler = (account: any) => {
-      console.log("Account changed:", account);
+    const accountChangeHandler = (state: any) => {
+      console.log("Account state changed:", state);
+      const account = state?.account;
       if (account && account.address) {
         handleAccountChange(account);
       } else {
@@ -90,16 +91,14 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     };
     
     // Use the SDK's event emitter method if available
-    if (appKit.subscribeEvents) {
-      appKit.subscribeEvents({
-        update: accountChangeHandler
-      });
+    if (typeof appKit.subscribeEvents === 'function') {
+      appKit.subscribeEvents(accountChangeHandler);
     }
     
     return () => {
       // Cleanup if needed
-      if (appKit.unsubscribeEvents) {
-        appKit.unsubscribeEvents();
+      if (typeof appKit.subscribeEvents === 'function') {
+        // No explicit unsubscribe needed in newer versions
       }
     };
   }, [appKit]);
@@ -121,12 +120,19 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     
     // Fetch balance
     try {
-      const provider = await appKit.getProvider();
+      const provider = await appKit.getProvider({ chainId: account.chainId });
       if (provider) {
-        // Use provider to get balance for the connected address
-        const balanceResult = await provider.getBalance(account.address);
-        const formattedBalance = ethers.formatEther(balanceResult);
-        setBalance(parseFloat(formattedBalance).toFixed(4));
+        try {
+          // Use provider to get balance for the connected address
+          const balanceResult = await provider.getBalance(account.address);
+          if (balanceResult) {
+            const formattedBalance = ethers.formatEther(balanceResult);
+            setBalance(parseFloat(formattedBalance).toFixed(4));
+          }
+        } catch (balanceError) {
+          console.error("Error in getBalance:", balanceError);
+          setBalance('0');
+        }
       }
     } catch (error) {
       console.error("Error fetching balance:", error);
@@ -140,7 +146,8 @@ export const WalletProvider = ({ children, appKit }: WalletProviderProps) => {
     setIsConnecting(true);
     try {
       console.log("Opening Reown AppKit modal...");
-      await appKit.connect();
+      // Use the open method for the modal
+      await appKit.open();
     } catch (error) {
       console.error("Error in connectWallet:", error);
       toast.error("Failed to connect wallet. Please try again.");
