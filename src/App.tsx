@@ -37,12 +37,12 @@ const modal = createAppKit({
     {
       id: 1, // Ethereum Mainnet
       name: 'Ethereum',
-      rpcUrl: 'https://eth-mainnet.public.blastapi.io'
+      rpcUrls: ['https://eth-mainnet.public.blastapi.io']
     },
     {
       id: 42161, // Arbitrum
       name: 'Arbitrum',
-      rpcUrl: 'https://arb1.arbitrum.io/rpc'
+      rpcUrls: ['https://arb1.arbitrum.io/rpc']
     }
   ],
   metadata,
