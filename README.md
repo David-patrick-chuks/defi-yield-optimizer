@@ -29,8 +29,8 @@ This project is built with modern web technologies:
 - **Blockchain Integration**: Ethers.js, Reown AppKit
 - **Data Visualization**: Recharts
 - **Routing**: React Router DOM
-- **API Integration**: TanStack React Query
-- **AI Analysis**: OpenAI GPT
+- **API Backend**: Express JS
+- **AI Analysis**: Gemini 
 
 ## 📋 Pages
 
