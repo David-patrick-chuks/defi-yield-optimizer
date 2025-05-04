@@ -94,11 +94,8 @@ Safe-Sage's AI engine analyzes multiple factors to provide comprehensive risk as
 
 Built with 💡 by:
 
-- Chucks Patrick
-- Ayobami Abiodun
-- Mayowa
-- Raphael
-- Omolayo
+- **David Patrick**: [GitHub](https://github.com/David-patrick-chuks)
+- **Ayobami Abiodun**: [GitHub](https://github.com/AABams-Dev)
 
 ## 📝 License
 
@@ -106,10 +103,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🔗 Links
 
-- **Live URL**: [Safe-Sage Live Project](https://safe-sage.com)
-- **Repository**: [GitHub](https://github.com/yourusername/safe-sage)
-- **Documentation**: [Docs](https://docs.safe-sage.com)
+- **Live URL**: [Safe-Sage Live Project](https://safesage-main.vercel.app)
+- **Repository [FE]**: [GitHub](https://github.com/David-patrick-chuks/safe-sage)
+- **Repository [BE]**: [GitHub](https://github.com/David-patrick-chuks/safe-sage)
 
 ## 📱 Contact
 
-For any inquiries, please reach out to us at contact@safe-sage.com
+For any inquiries, please reach out to us at davidchuksdev@gmail.com
