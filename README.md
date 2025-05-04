@@ -31,7 +31,7 @@ This project is built with modern web technologies:
 - **Routing**: React Router DOM
 - **API Backend**: Express JS
 - **AI Analysis**: Gemini 
-
+## Backend Repo [Link](https://github.com/David-patrick-chuks/SafeSage-Backend)
 ## 📋 Pages
 
 - **Home** - Introduction to Safe-Sage with risk analysis preview
