@@ -8,8 +8,8 @@ const About = () => {
     { name: "Ethereum Virtual Machine (EVM)", category: "Blockchain" },
     { name: "Move Virtual Machine (MoveVM)", category: "Blockchain" },
     { name: "CoinGecko API", category: "Market Data" },
-    { name: "OpenAI GPT-4", category: "AI Analytics" },
-    { name: "Gemini", category: "AI Analytics" },
+    { name: "Express JS", category: "Backend" },
+    { name: "Gemini", category: "Backend" },
     { name: "React", category: "Frontend" },
     { name: "TypeScript", category: "Frontend" },
     { name: "Tailwind CSS", category: "Design" },
@@ -96,7 +96,7 @@ const About = () => {
             </div>
             
             <div className="grid md:grid-cols-2 gap-4">
-              {["Blockchain", "Market Data", "AI Analytics", "Frontend", "Design"].map(category => (
+              {["Blockchain", "Market Data", "Backend", "Frontend", "Design"].map(category => (
                 <div key={category} className="border border-slate-200 rounded-lg p-4">
                   <h3 className="text-sm font-medium text-slate-800 mb-2">{category}</h3>
                   <div className="flex flex-wrap gap-2">
@@ -109,7 +109,7 @@ const About = () => {
                             "text-xs px-2 py-1 rounded-full",
                             category === "Blockchain" && "bg-blue-50 text-blue-700",
                             category === "Market Data" && "bg-green-50 text-green-700",
-                            category === "AI Analytics" && "bg-purple-50 text-purple-700",
+                            category === "Backend" && "bg-purple-50 text-purple-700",
                             category === "Frontend" && "bg-amber-50 text-amber-700",
                             category === "Design" && "bg-rose-50 text-rose-700"
                           )}

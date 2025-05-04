@@ -79,7 +79,7 @@ const Dashboard = () => {
       nativeToken.riskScore = riskScore;
   
       setWalletTokens([nativeToken]);
-      toast.success("ETH price & risk data loaded");
+      // toast.success("ETH price & risk data loaded");
     } catch (err) {
       console.error("Failed to load ETH data:", err);
       toast.error("Unable to fetch ETH market data.");
