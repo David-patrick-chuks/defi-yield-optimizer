@@ -1,4 +1,5 @@
 
+
 # Safe-Sage: AI-Powered DeFi Risk Analysis
 
 ![Safe-Sage Logo](https://github.com/David-patrick-chuks/safe-sage-ui-guardian-62/blob/main/public/safesageLOGO.jpg)
@@ -83,6 +84,31 @@ Safe-Sage's AI engine analyzes multiple factors to provide comprehensive risk as
 - **Protocol Analysis**: Examines total value locked, longevity, governance structure, and community engagement
 - **Historical Performance**: Analyzes historical price movements and correlations with broader market trends
 
+## 🔮 Future Roadmap
+
+Based on user feedback and market research, we've identified several key areas for future improvement:
+
+### Key Learnings & Improvement Areas
+
+- **Enhanced Risk Modeling**: Incorporate more sophisticated risk models that can better predict market volatility and protocol vulnerabilities
+- **User Experience Optimization**: Simplify the dashboard interface based on user feedback to make risk metrics more accessible to crypto newcomers
+- **Performance Improvements**: Optimize wallet connection and token data loading to reduce wait times during analysis
+
+### Planned Features
+
+1. **Multi-Chain Support**: Expand beyond Ethereum to analyze assets across Solana, Polygon, Avalanche, and other major blockchains
+2. **Portfolio Simulation**: Allow users to test hypothetical portfolio changes and see how they would affect overall risk metrics
+3. **Risk Alerts**: Implement a notification system to alert users about significant changes in risk profiles of tokens they hold
+4. **Mobile Application**: Develop native mobile apps for iOS and Android to enable on-the-go risk analysis
+5. **API Access**: Create a developer API allowing third-party integration of our risk analysis engine
+6. **Advanced AI Reports**: Enhance the AI analysis with more detailed recommendations and educational content about specific risks
+
+### Community Engagement
+
+- Launch a governance token to allow community participation in platform development decisions
+- Create an educational hub with resources about DeFi risk management
+- Establish partnerships with major DeFi protocols for deeper integration and analysis
+
 ## 👥 Team
 
 Built with 💡 by:
@@ -103,3 +129,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📱 Contact
 
 For any inquiries, please reach out to us at davidchuksdev@gmail.com
+
