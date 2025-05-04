@@ -1,25 +1,23 @@
-
 import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import LoadingAI from '@/components/ui/LoadingAI';
 import TokenRiskCard from '@/components/ui/TokenRiskCard';
 import { Button } from '@/components/ui/button';
 import { Download, Share } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
 import { downloadReport, shareReport } from '@/utils/reportUtils';
 import { analyzeTokens } from '@/services/openai';
 import { toast } from '@/components/ui/sonner';
 import { useWallet } from '@/context/WalletContext';
 
-// Define interfaces for token data
 interface TokenData {
   name: string;
   symbol: string;
@@ -35,180 +33,127 @@ interface TokenAnalysis {
   suggestions?: string;
 }
 
-// Complete list of supported tokens to analyze
 const SUPPORTED_TOKENS = [
-  { name: "Ethereum", symbol: "ETH", coingeckoId: "ethereum" },
-  { name: "Bitcoin", symbol: "BTC", coingeckoId: "bitcoin" },
-  { name: "MoveVM", symbol: "MOVE", coingeckoId: "move-vm" },
-  { name: "IOTA", symbol: "MIOTA", coingeckoId: "iota" },
-  { name: "Solana", symbol: "SOL", coingeckoId: "solana" },
-  { name: "Cardano", symbol: "ADA", coingeckoId: "cardano" },
-  { name: "Polkadot", symbol: "DOT", coingeckoId: "polkadot" },
-  { name: "Chainlink", symbol: "LINK", coingeckoId: "chainlink" },
-  { name: "Uniswap", symbol: "UNI", coingeckoId: "uniswap" },
-  { name: "Avalanche", symbol: "AVAX", coingeckoId: "avalanche-2" },
-  { name: "Polygon", symbol: "MATIC", coingeckoId: "matic-network" },
-  { name: "Near Protocol", symbol: "NEAR", coingeckoId: "near" },
-  { name: "Cosmos", symbol: "ATOM", coingeckoId: "cosmos" },
-  { name: "Algorand", symbol: "ALGO", coingeckoId: "algorand" },
-  { name: "Filecoin", symbol: "FIL", coingeckoId: "filecoin" },
-  { name: "Tezos", symbol: "XTZ", coingeckoId: "tezos" }
+  { name: 'Ethereum', symbol: 'ETH', coingeckoId: 'ethereum' },
+  { name: 'Bitcoin', symbol: 'BTC', coingeckoId: 'bitcoin' },
+  { name: 'MoveVM', symbol: 'MOVE', coingeckoId: 'move-vm' },
+  { name: 'IOTA', symbol: 'MIOTA', coingeckoId: 'iota' },
+  { name: 'Solana', symbol: 'SOL', coingeckoId: 'solana' },
+  { name: 'Cardano', symbol: 'ADA', coingeckoId: 'cardano' },
+  { name: 'Polkadot', symbol: 'DOT', coingeckoId: 'polkadot' },
+  { name: 'Chainlink', symbol: 'LINK', coingeckoId: 'chainlink' },
+  { name: 'Uniswap', symbol: 'UNI', coingeckoId: 'uniswap' },
+  { name: 'Avalanche', symbol: 'AVAX', coingeckoId: 'avalanche-2' },
+  { name: 'Polygon', symbol: 'MATIC', coingeckoId: 'matic-network' },
+  { name: 'Near Protocol', symbol: 'NEAR', coingeckoId: 'near' },
+  { name: 'Cosmos', symbol: 'ATOM', coingeckoId: 'cosmos' },
+  { name: 'Algorand', symbol: 'ALGO', coingeckoId: 'algorand' },
+  { name: 'Filecoin', symbol: 'FIL', coingeckoId: 'filecoin' },
+  { name: 'Tezos', symbol: 'XTZ', coingeckoId: 'tezos' },
 ];
 
 const Report = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenAnalysis, setTokenAnalysis] = useState<TokenAnalysis[]>([]);
   const { isConnected, address, balance, chainId } = useWallet();
-  
-  // Load and analyze tokens
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        if (!isConnected || !address) {
-          toast.error("Please connect your wallet first");
-          setIsLoading(false);
-          return;
-        }
-        
-        toast.info("AI risk analysis starting...");
-        
-        // Get real token data - start with ETH from wallet balance
-        const realTokens: TokenData[] = [
-          { 
-            name: "Ethereum", 
-            symbol: "ETH", 
-            balance: parseFloat(balance)
-          }
-        ];
-        
-        try {
-          // Try to fetch real market data
-          const ids = SUPPORTED_TOKENS.map(token => token.coingeckoId).join(',');
-          const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=100&page=1`);
-          
-          if (!response.ok) {
-            throw new Error(`API request failed with status: ${response.status}`);
-          }
-          
-          const marketData = await response.json();
-          
-          if (marketData && Array.isArray(marketData)) {
-            // Add price data to Ethereum
-            const ethData = marketData.find((coin: any) => coin.symbol.toLowerCase() === 'eth');
-            if (ethData) {
-              realTokens[0].price = ethData.current_price;
-            }
-            
-            // Generate consistent pseudo-random balances based on wallet address
-            const getRandomBalance = (symbol: string) => {
-              // Using a hash of address + symbol to generate consistent "random" balance
-              let hash = 0;
-              const str = `${address}-${symbol}`;
-              for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
-              }
-              // Generate value between 0.05 and 15
-              return Math.abs((hash % 1495 + 5) / 100);
-            };
-            
-            // Add other supported tokens with simulated balances
-            for (const token of SUPPORTED_TOKENS) {
-              // Skip ETH as it's already handled
-              if (token.symbol === 'ETH') continue;
-              
-              const tokenData = marketData.find((coin: any) => 
-                coin.symbol.toLowerCase() === token.symbol.toLowerCase() || 
-                coin.id === token.coingeckoId
-              );
-              
-              if (tokenData) {
-                realTokens.push({
-                  name: token.name,
-                  symbol: token.symbol,
-                  balance: getRandomBalance(token.symbol),
-                  price: tokenData.current_price
-                });
-              }
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching market data:", error);
-          
-          // Add fallback token data if API fails
-          if (realTokens.length === 1) {
-            realTokens.push(
-              { name: "Bitcoin", symbol: "BTC", balance: 0.0123 },
-              { name: "MoveVM", symbol: "MOVE", balance: 1250 },
-              { name: "IOTA", symbol: "MIOTA", balance: 500 },
-              { name: "Solana", symbol: "SOL", balance: 8.5 },
-              { name: "Cardano", symbol: "ADA", balance: 2500 },
-              { name: "Polkadot", symbol: "DOT", balance: 75 },
-              { name: "Chainlink", symbol: "LINK", balance: 120 }
-            );
-          }
-        }
-
-        console.log("Analyzing wallet tokens:", realTokens);
-        
-        // Analyze tokens using the OpenAI service
-        const analysis = await analyzeTokens(realTokens);
-        console.log("AI analysis completed:", analysis);
-        
-        setTokenAnalysis(analysis);
+      if (!isConnected || !address) {
+        toast.error('Please connect your wallet first');
         setIsLoading(false);
-        toast.success("AI risk analysis completed");
-      } catch (error) {
-        console.error("Error fetching token analysis:", error);
-        toast.error("Failed to generate AI report. Please try again.");
+        return;
+      }
+
+      toast.info('AI risk analysis starting...');
+      const realTokens: TokenData[] = [];
+
+      if (parseFloat(balance) > 0) {
+        realTokens.push({
+          name: 'Ethereum',
+          symbol: 'ETH',
+          balance: parseFloat(balance),
+        });
+      }
+
+      try {
+        const ids = SUPPORTED_TOKENS.map((t) => t.coingeckoId).join(',');
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}`
+        );
+        const marketData = await res.json();
+
+        for (const token of realTokens) {
+          const tokenInfo = marketData.find(
+            (d: any) => d.symbol.toLowerCase() === token.symbol.toLowerCase()
+          );
+          if (tokenInfo) {
+            token.price = tokenInfo.current_price;
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching market prices:', err);
+      }
+
+      if (realTokens.length === 0) {
+        toast.warning('No supported tokens with non-zero balance found. Showing empty analysis.');
+        setTokenAnalysis([
+          {
+            name: 'N/A',
+            symbol: 'N/A',
+            riskScore: 1,
+            explanation: 'No tokens were found in your wallet. No risk detected.',
+            suggestions: 'Consider adding some assets to your wallet for future analysis.',
+          },
+        ]);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const analysis = await analyzeTokens(realTokens);
+        setTokenAnalysis(analysis);
+        toast.success('AI risk analysis completed');
+      } catch (err) {
+        console.error('AI analysis failed:', err);
+        toast.error('Failed to generate AI report');
+      } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
-  }, [isConnected, address, balance, chainId]);
-  
-  // Redirect to dashboard if not connected
-  useEffect(() => {
-    if (!isConnected && !isLoading) {
-      toast.error("Please connect your wallet to view the risk analysis");
-      // Add a small delay before redirecting
-      const timeout = setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 2000);
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [isConnected, isLoading]);
-  
-  const chartData = tokenAnalysis.map(token => ({
+  }, [isConnected, address, balance]);
+
+  const overallRisk =
+    tokenAnalysis.length > 0
+      ? tokenAnalysis.reduce((sum, t) => sum + t.riskScore, 0) / tokenAnalysis.length
+      : 0;
+
+  const chartData = tokenAnalysis.map((token) => ({
     name: token.symbol,
     riskScore: token.riskScore,
-    fill: token.riskScore <= 3 ? '#68D391' : 
-          token.riskScore <= 6 ? '#F6E05E' : 
-          '#F56565'
+    fill:
+      token.riskScore <= 3
+        ? '#68D391'
+        : token.riskScore <= 6
+        ? '#F6E05E'
+        : '#F56565',
   }));
-  
-  const overallRisk = tokenAnalysis.length > 0 
-    ? tokenAnalysis.reduce((sum, token) => sum + token.riskScore, 0) / tokenAnalysis.length
-    : 0;
 
-  // Handle report downloads and sharing
   const handleDownloadReport = async () => {
     try {
       await downloadReport();
-    } catch (error) {
-      console.error("Error downloading report:", error);
-      toast.error("Failed to download report");
+    } catch (err) {
+      toast.error('Failed to download report');
     }
   };
 
   const handleShareReport = async () => {
     try {
       await shareReport();
-    } catch (error) {
-      console.error("Error sharing report:", error);
-      toast.error("Failed to share report");
+    } catch (err) {
+      toast.error('Failed to share report');
     }
   };
 
@@ -219,121 +164,95 @@ const Report = () => {
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 min-h-[70vh] flex items-center justify-center">
             <LoadingAI />
           </div>
-        ) : !isConnected ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 min-h-[50vh] flex flex-col items-center justify-center">
-            <h2 className="text-xl font-medium text-slate-800 mb-4">Wallet Connection Required</h2>
-            <p className="text-slate-600 mb-6">Please connect your wallet to analyze your portfolio.</p>
-            <Button onClick={() => window.location.href = '/dashboard'} className="gradient-bg-secondary">
-              Go to Dashboard
-            </Button>
-          </div>
         ) : (
           <div id="report-content">
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-6">
-              <div className="flex flex-col md:flex-row justify-between mb-8">
+              <div className="flex justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-800 mb-2">AI Risk Analysis</h1>
-                  <p className="text-slate-600">
-                    Generated on {new Date().toLocaleDateString()}
-                  </p>
+                  <h1 className="text-2xl font-bold">AI Risk Analysis</h1>
+                  <p className="text-slate-500">Generated on {new Date().toLocaleDateString()}</p>
                 </div>
-                <div className="flex gap-3 mt-4 md:mt-0">
-                  <Button variant="outline" size="sm" onClick={handleDownloadReport}>
+                <div className="flex gap-3">
+                  <Button variant="outline" onClick={handleDownloadReport}>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleShareReport}>
+                  {/* <Button variant="outline" onClick={handleShareReport}>
                     <Share className="h-4 w-4 mr-2" />
                     Share
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
-              
-              <div className="mb-8">
-                <h2 className="text-lg font-medium text-slate-800 mb-4">Portfolio Risk Summary</h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-slate-50 p-5 rounded-lg">
-                    <p className="text-sm text-slate-500 mb-1">Average Risk Score</p>
-                    <div className="flex items-baseline gap-2">
-                      <h3 className="text-3xl font-bold">{overallRisk.toFixed(1)}</h3>
-                      <span className="text-sm font-medium px-2 py-0.5 rounded-full"
-                        style={{ 
-                          backgroundColor: overallRisk <= 3 ? '#68D391' : 
-                                          overallRisk <= 6 ? '#F6E05E' : 
-                                          '#F56565',
-                          color: overallRisk <= 3 ? '#276749' : 
-                                 overallRisk <= 6 ? '#975A16' : 
-                                 '#9B2C2C' 
-                        }}>
-                        {overallRisk <= 3 ? 'Low' : overallRisk <= 6 ? 'Moderate' : 'High'} Risk
-                      </span>
-                    </div>
-                    <p className="text-slate-600 mt-3 text-sm">
-                      Your portfolio has an {overallRisk <= 3 ? 'low' : overallRisk <= 6 ? 'moderate' : 'high'} overall risk score. 
-                      {overallRisk > 5 ? ' Consider rebalancing to reduce exposure to higher risk assets.' : ' Your current asset allocation is well-diversified.'}
-                    </p>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-slate-50 p-5 rounded-lg">
+                  <p className="text-sm text-slate-500 mb-1">Average Risk Score</p>
+                  <div className="flex items-baseline gap-2">
+                    <h3 className="text-3xl font-bold">{overallRisk.toFixed(1)}</h3>
+                    <span
+                      className="text-sm font-medium px-2 py-0.5 rounded-full"
+                      style={{
+                        backgroundColor:
+                          overallRisk <= 3
+                            ? '#68D391'
+                            : overallRisk <= 6
+                            ? '#F6E05E'
+                            : '#F56565',
+                        color:
+                          overallRisk <= 3
+                            ? '#276749'
+                            : overallRisk <= 6
+                            ? '#975A16'
+                            : '#9B2C2C',
+                      }}
+                    >
+                      {overallRisk <= 3
+                        ? 'Low'
+                        : overallRisk <= 6
+                        ? 'Moderate'
+                        : 'High'}{' '}
+                      Risk
+                    </span>
                   </div>
-                  
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={chartData}
-                        margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis domain={[0, 10]} />
-                        <Tooltip 
-                          formatter={(value) => [`Risk Score: ${value}`, 'Risk Level']}
-                          labelStyle={{ color: '#1a202c' }}
-                          contentStyle={{ backgroundColor: 'white', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}
-                        />
-                        <Bar dataKey="riskScore" fill="#8884d8" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <p className="text-sm mt-3 text-slate-600">
+                    Your portfolio has an{' '}
+                    {overallRisk <= 3
+                      ? 'low'
+                      : overallRisk <= 6
+                      ? 'moderate'
+                      : 'high'}{' '}
+                    overall risk score.
+                  </p>
+                </div>
+
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="name" />
+                      <YAxis domain={[0, 10]} />
+                      <Tooltip
+                        formatter={(value) => [`Risk Score: ${value}`, 'Risk Level']}
+                      />
+                      <Bar dataKey="riskScore" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
-            </div>
-            
-            <div className="mb-6">
-              <h2 className="text-xl font-medium text-slate-800 mb-4">Individual Token Assessment</h2>
-              {tokenAnalysis.length > 0 ? (
-                <div className="space-y-4">
-                  {tokenAnalysis.map((token) => (
-                    <TokenRiskCard
-                      key={token.symbol}
-                      name={token.name}
-                      symbol={token.symbol}
-                      riskScore={token.riskScore}
-                      explanation={token.explanation}
-                      suggestions={token.suggestions}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="bg-slate-50 p-6 rounded-lg text-center">
-                  <p className="text-slate-600">No tokens found in your wallet for analysis.</p>
-                </div>
-              )}
-            </div>
-            
-            <div className="p-6 bg-sage-50 border border-sage-200 rounded-lg">
-              <div className="mb-3 font-medium text-sage-800">AI Risk Recommendations</div>
-              <ul className="space-y-2 text-sage-700">
-                <li className="flex gap-2">
-                  <span>•</span>
-                  <span>Consider reducing exposure to high-risk tokens and reallocating to more established assets.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span>•</span>
-                  <span>Your stablecoin allocation provides good stability to your portfolio. Consider maintaining this balance.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span>•</span>
-                  <span>For moderate-risk DeFi exposure, explore established protocols with longer track records.</span>
-                </li>
-              </ul>
+
+              <div>
+                <h2 className="text-xl font-medium mb-4">Token Risk Breakdown</h2>
+                {tokenAnalysis.map((token) => (
+                  <TokenRiskCard
+                    key={token.symbol}
+                    name={token.name}
+                    symbol={token.symbol}
+                    riskScore={token.riskScore}
+                    explanation={token.explanation}
+                    suggestions={token.suggestions}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}

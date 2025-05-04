@@ -21,62 +21,83 @@ const Dashboard = () => {
   const { isConnected, address, connectWallet, balance, chainId } = useWallet();
   const [walletTokens, setWalletTokens] = useState<TokenData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const fetchTokenData = async () => {
     if (!isConnected || !address) return;
     setIsLoading(true);
-
+  
     try {
       const nativeToken: TokenData = {
         name: "Ethereum",
         symbol: "ETH",
         balance: balance,
-        value: "0",
-        priceChange24h: "0",
-        riskScore: 2.5
+        value: "0"
       };
-
+  
       const res = await fetch(
         `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum&price_change_percentage=24h`
       );
-
+  
       if (!res.ok) {
         throw new Error(`CoinGecko API error: ${res.status}`);
       }
-
+  
       const [ethData] = await res.json();
-
       if (!ethData) {
         throw new Error('Ethereum data not found in response');
       }
-
+  
       const ethPrice = ethData.current_price;
       const parsedBalance = parseFloat(balance);
-
-      nativeToken.value = ethPrice
-      // nativeToken.value = (parsedBalance * ethPrice).toFixed(2);
-      nativeToken.priceChange24h = ethData.price_change_percentage_24h?.toFixed(2);
+  
+      // Basic scoring formula (you can refine this as needed)
+      const priceChange = ethData.price_change_percentage_24h ?? 0;
+      const marketCapRank = ethData.market_cap_rank ?? 1000;
+  
+      let riskScore = 0;
+  
+      // Higher 24h price change = more volatile = higher risk
+      if (Math.abs(priceChange) >= 10) {
+        riskScore += 3;
+      } else if (Math.abs(priceChange) >= 5) {
+        riskScore += 2;
+      } else {
+        riskScore += 1;
+      }
+  
+      // Lower market cap rank (i.e., top 10) = lower risk
+      if (marketCapRank <= 10) {
+        riskScore += 1;
+      } else if (marketCapRank <= 50) {
+        riskScore += 2;
+      } else {
+        riskScore += 3;
+      }
+  
+      nativeToken.value = ethPrice;
+      nativeToken.priceChange24h = priceChange.toFixed(2);
       nativeToken.logoUrl = ethData.image;
-
+      nativeToken.riskScore = riskScore;
+  
       setWalletTokens([nativeToken]);
-      toast.success("ETH price data loaded");
+      toast.success("ETH price & risk data loaded");
     } catch (err) {
       console.error("Failed to load ETH data:", err);
       toast.error("Unable to fetch ETH market data.");
-
+  
       setWalletTokens([
         {
           name: "Ethereum",
           symbol: "ETH",
           balance,
           value: "0",
-          riskScore: 2.5
+          riskScore: 3 // fallback
         }
       ]);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if (isConnected && address) {
