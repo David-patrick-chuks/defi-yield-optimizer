@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TokenCard from '@/components/ui/TokenCard';
@@ -7,9 +6,7 @@ import { CircleArrowRight, Wallet, FileSearch } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useWallet } from '@/context/WalletContext';
 import { toast } from '@/components/ui/sonner';
-import { SupportBot } from '@/components/ui/support-bot';
 
-// Define interface for our token data
 interface TokenData {
   name: string;
   symbol: string;
@@ -24,67 +21,63 @@ const Dashboard = () => {
   const { isConnected, address, connectWallet, balance, chainId } = useWallet();
   const [walletTokens, setWalletTokens] = useState<TokenData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Function to fetch real token data
+
   const fetchTokenData = async () => {
     if (!isConnected || !address) return;
-    
     setIsLoading(true);
+
     try {
-      // For native token (ETH), we use the balance from WalletContext
-      const nativeToken: TokenData = { 
-        name: "Ethereum", 
-        symbol: "ETH", 
-        balance: balance, 
+      const nativeToken: TokenData = {
+        name: "Ethereum",
+        symbol: "ETH",
+        balance: balance,
         value: "0",
         priceChange24h: "0",
         riskScore: 2.5
       };
 
-      // Get current market data from CoinGecko
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`);
-      
-      if (!response.ok) {
-        throw new Error(`API request failed with status: ${response.status}`);
+      const res = await fetch(
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum&price_change_percentage=24h`
+      );
+
+      if (!res.ok) {
+        throw new Error(`CoinGecko API error: ${res.status}`);
       }
-      
-      const marketData = await response.json();
-      
-      if (!Array.isArray(marketData)) {
-        throw new Error('Invalid market data format');
+
+      const [ethData] = await res.json();
+
+      if (!ethData) {
+        throw new Error('Ethereum data not found in response');
       }
-      
-      console.log("Fetched market data:", marketData.length, "tokens");
-      
-      // Calculate ETH USD value using real market data
-      const ethMarketData = marketData.find((coin: any) => coin.symbol.toLowerCase() === 'eth');
-      if (ethMarketData) {
-        const ethPrice = ethMarketData.current_price;
-        nativeToken.value = (parseFloat(balance) * ethPrice).toLocaleString();
-        nativeToken.priceChange24h = ethMarketData.price_change_percentage_24h?.toFixed(2);
-        nativeToken.logoUrl = ethMarketData.image;
-      }
-      
-      // Only display ETH for now as it's the only token we can verify in the wallet
-      const tokens: TokenData[] = [nativeToken];
-      
-      setWalletTokens(tokens);
-      toast.success("Portfolio data loaded");
-    } catch (error) {
-      console.error("Error fetching token data:", error);
-      toast.error("Failed to fetch real-time token data.");
-      
-      // Minimal fallback - just show ETH with a default value
-      const fallbackTokens: TokenData[] = [
-        { name: "Ethereum", symbol: "ETH", balance: balance, value: "0", riskScore: 2.5 }
-      ];
-      setWalletTokens(fallbackTokens);
+
+      const ethPrice = ethData.current_price;
+      const parsedBalance = parseFloat(balance);
+
+      nativeToken.value = ethPrice
+      // nativeToken.value = (parsedBalance * ethPrice).toFixed(2);
+      nativeToken.priceChange24h = ethData.price_change_percentage_24h?.toFixed(2);
+      nativeToken.logoUrl = ethData.image;
+
+      setWalletTokens([nativeToken]);
+      toast.success("ETH price data loaded");
+    } catch (err) {
+      console.error("Failed to load ETH data:", err);
+      toast.error("Unable to fetch ETH market data.");
+
+      setWalletTokens([
+        {
+          name: "Ethereum",
+          symbol: "ETH",
+          balance,
+          value: "0",
+          riskScore: 2.5
+        }
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
-  
-  // Fetch token data when wallet connects
+
   useEffect(() => {
     if (isConnected && address) {
       fetchTokenData();
@@ -92,18 +85,20 @@ const Dashboard = () => {
       setWalletTokens([]);
     }
   }, [isConnected, address, balance]);
-  
+
   return (
     <MainLayout>
       <div className="safe-container py-8">
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
           <h1 className="text-2xl font-bold text-slate-800 mb-6">Portfolio Dashboard</h1>
-          
+
           {isConnected ? (
             <>
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <div className="mb-4 md:mb-0">
-                  <p className="text-sm text-slate-500 mb-1">Connected Wallet {chainId && `(Chain ID: ${chainId})`}</p>
+                  <p className="text-sm text-slate-500 mb-1">
+                    Connected Wallet {chainId && `(Chain ID: ${chainId})`}
+                  </p>
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center mr-2">
                       <Wallet className="h-4 w-4 text-slate-600" />
@@ -113,7 +108,7 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <Link to="/report">
                   <Button className="w-full md:w-auto gradient-bg-secondary">
                     <FileSearch className="h-4 w-4 mr-2" />
@@ -121,16 +116,14 @@ const Dashboard = () => {
                   </Button>
                 </Link>
               </div>
-              
+
               <div className="mb-4">
                 <h2 className="text-xl font-medium text-slate-800 mb-4">Your Tokens</h2>
                 {isLoading && (
-                  <div className="text-center py-6 text-slate-500">
-                    Loading portfolio data...
-                  </div>
+                  <div className="text-center py-6 text-slate-500">Loading portfolio data...</div>
                 )}
               </div>
-              
+
               <div className="space-y-3">
                 {!isLoading && walletTokens.length > 0 ? (
                   walletTokens.map((token) => (
@@ -146,18 +139,14 @@ const Dashboard = () => {
                       onClick={() => {}}
                     />
                   ))
-                ) : !isLoading && (
-                  <div className="text-center py-6 text-slate-500">
-                    No tokens found in your wallet
-                  </div>
-                )}
+                ) : !isLoading ? (
+                  <div className="text-center py-6 text-slate-500">No tokens found in your wallet</div>
+                ) : null}
               </div>
-              
+
               <div className="mt-8 flex flex-col md:flex-row gap-4">
                 <Link to="/report" className="flex-1">
-                  <Button className="w-full gradient-bg-secondary">
-                    Generate Risk Report
-                  </Button>
+                  <Button className="w-full gradient-bg-secondary">Generate Risk Report</Button>
                 </Link>
                 <Link to="/compare" className="flex-1">
                   <Button variant="outline" className="w-full">
@@ -175,7 +164,7 @@ const Dashboard = () => {
               <p className="text-slate-600 mb-6 max-w-md mx-auto">
                 Connect your cryptocurrency wallet to view your portfolio and analyze risks.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <Button onClick={connectWallet} className="gradient-bg-secondary">
                   <Wallet className="h-4 w-4 mr-2" />
@@ -185,7 +174,7 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-        
+
         <div className="mt-8 p-6 bg-slate-50 border border-slate-200 rounded-lg">
           <div className="flex items-start gap-4">
             <div className="p-2 bg-sage-100 rounded-full text-sage-600">
@@ -205,9 +194,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      
-      {/* Add Support Bot Component */}
-   
     </MainLayout>
   );
 };
