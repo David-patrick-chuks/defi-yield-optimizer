@@ -9,6 +9,7 @@
 Safe-Sage acts as an AI guide for safer DeFi choices, helping users analyze portfolio risks, make informed decisions, and protect their investments. The platform provides risk scoring, comparisons, and recommendations for cryptocurrency assets.
 
 ##  Demo Link [YouTube](https://youtu.be/6SpAu5vdrcI)
+## Twitter [Link](https://x.com/TheSafeSage)
 ## 🚀 Features
 
 - **Portfolio Analysis**: Connect your wallet and get AI-driven risk assessment of your token holdings
