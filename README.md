@@ -49,7 +49,7 @@ This project is built with modern web technologies:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/safe-sage.git
+git clone https://github.com/david-chuks-dev/safe-sage.git
 cd safe-sage
 ```
 
@@ -60,14 +60,7 @@ npm install
 yarn
 ```
 
-3. Create a `.env` file in the project root with the following environment variables:
-```
-VITE_COINGECKO_API_KEY=your_coingecko_api_key
-VITE_OPENAI_API_KEY=your_openai_api_key
-VITE_REOWN_PROJECT_ID=your_reown_project_id
-```
-
-4. Start the development server:
+3. Start the development server:
 ```bash
 npm run dev
 # or
