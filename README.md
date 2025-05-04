@@ -1,7 +1,7 @@
 
 # Safe-Sage: AI-Powered DeFi Risk Analysis
 
-![Safe-Sage Logo](https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png)
+![Safe-Sage Logo](https://github.com/David-patrick-chuks/safe-sage-ui-guardian-62/blob/main/public/safesageLOGO.jpg)
 
 ## 🔮 Overview
 
