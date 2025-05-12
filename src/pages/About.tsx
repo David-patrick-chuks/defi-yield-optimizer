@@ -1,15 +1,17 @@
 
 import MainLayout from '@/components/layout/MainLayout';
-import { Shield, Brain, Database, Code } from 'lucide-react';
+import { Database, Brain, Bot, Coins, TrendingUp, Code, CircleCheck, CircleDollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { FeatureCard } from '@/components/ui/FeatureCard';
 
 const About = () => {
   const techList = [
-    { name: "Ethereum Virtual Machine (EVM)", category: "Blockchain" },
-    { name: "Move Virtual Machine (MoveVM)", category: "Blockchain" },
+    { name: "Base Network", category: "Blockchain" },
+    { name: "CDP SDK", category: "Blockchain" },
+    { name: "AgentKit", category: "AI Agent" },
     { name: "CoinGecko API", category: "Market Data" },
     { name: "Express JS", category: "Backend" },
-    { name: "Gemini", category: "Backend" },
+    { name: "Gemini", category: "AI Engine" },
     { name: "React", category: "Frontend" },
     { name: "TypeScript", category: "Frontend" },
     { name: "Tailwind CSS", category: "Design" },
@@ -19,32 +21,32 @@ const About = () => {
     <MainLayout>
       <div className="safe-container py-8">
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-6">
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">About SafeSage</h1>
+          <h1 className="text-2xl font-bold text-slate-800 mb-2">DeFi Yield Optimizer Agent</h1>
           <p className="text-slate-600 mb-8">
-            Your AI guide for safer DeFi investment decisions.
+            Your AI agent for optimizing DeFi yield farming strategies.
           </p>
           
           <div className="mb-8">
             <h2 className="text-xl font-medium text-slate-800 mb-4 flex items-center gap-2">
-              <Shield className="h-5 w-5 text-sage-600" />
-              What is SafeSage?
+              <Bot className="h-5 w-5 text-sage-600" />
+              What is DeFi Yield Optimizer?
             </h2>
             <div className="prose text-slate-600 max-w-none">
               <p>
-                SafeSage is an AI-powered platform designed to help cryptocurrency investors 
-                understand and mitigate risks in their DeFi portfolios. In the complex and 
-                often unpredictable world of cryptocurrency, making informed decisions is crucial 
-                for protecting your investments.
+                DeFi Yield Optimizer is an AI-powered agent designed to analyze DeFi protocols on Base to 
+                identify and execute optimal yield farming strategies for stablecoins like USDC. The agent 
+                uses AgentKit to autonomously deploy capital, monitor market conditions, and rebalance 
+                investments for maximum returns while minimizing gas fees.
               </p>
               <p>
-                Our mission is to act as a wise guide for your DeFi journey, providing clear, 
-                accessible risk assessments and suggestions for safer alternatives. We believe 
-                that with better information, investors can make more confident decisions.
+                Our mission is to simplify yield farming for DeFi users by automating strategy selection,
+                capital deployment, and portfolio rebalancing to maximize returns while minimizing risk
+                and transaction costs.
               </p>
               <p>
-                SafeSage doesn't store or move any of your tokens. We simply analyze the publicly 
-                available information about the tokens in your portfolio to provide insights 
-                about potential risks.
+                The agent operates autonomously, analyzing real-time market data and executing transactions
+                based on predefined risk parameters and optimization goals. You maintain full control over
+                your investment strategy and can override agent decisions at any time.
               </p>
             </div>
           </div>
@@ -52,35 +54,80 @@ const About = () => {
           <div className="mb-8">
             <h2 className="text-xl font-medium text-slate-800 mb-4 flex items-center gap-2">
               <Brain className="h-5 w-5 text-sage-600" />
-              How Does the AI Work?
+              How Does the AI Agent Work?
             </h2>
             <div className="prose text-slate-600 max-w-none">
               <p>
-                SafeSage's AI engine analyzes multiple factors to provide comprehensive risk assessments:
+                Our DeFi Yield Optimizer agent processes multiple data streams to make informed investment decisions:
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  <strong>Market Analysis</strong>: We evaluate market capitalization, trading volume, 
-                  liquidity, and price volatility to gauge market-related risks.
+                  <strong>Protocol Analysis</strong>: The agent scans Base DeFi protocols to identify
+                  yield-generating opportunities, analyzing TVL, APY rates, and protocol risk scores.
                 </li>
                 <li>
-                  <strong>Technical Risk Assessment</strong>: Our AI reviews smart contract audits, 
-                  code quality metrics, and security incidents to identify technical vulnerabilities.
+                  <strong>Gas Optimization</strong>: Transactions are timed and batched to minimize
+                  gas fees on the Base network, ensuring more yield goes to your wallet.
                 </li>
                 <li>
-                  <strong>Protocol Analysis</strong>: For DeFi protocols, we examine total value locked, 
-                  longevity, governance structure, and community engagement.
+                  <strong>Yield Comparison</strong>: The agent continuously compares yields across
+                  different protocols to identify the most profitable options given your risk tolerance.
                 </li>
                 <li>
-                  <strong>Historical Performance</strong>: We analyze historical price movements and 
-                  correlations with broader market trends.
+                  <strong>Auto-Rebalancing</strong>: When market conditions change, the agent can
+                  automatically rebalance your portfolio to maintain optimal returns.
                 </li>
               </ul>
               <p>
-                After collecting and analyzing this data, our advanced AI models generate a risk score 
-                and provide explanations in clear, non-technical language. The AI is continuously 
-                learning from new market data and improving its assessment capabilities.
+                Using AgentKit, our agent interacts with smart contracts to stake, unstake, or swap tokens
+                as needed to execute the optimal strategy. All actions are transparent, with detailed
+                transaction logs and performance reports available through the dashboard.
               </p>
+            </div>
+          </div>
+          
+          <div className="mb-8">
+            <h2 className="text-xl font-medium text-slate-800 mb-4 flex items-center gap-2">
+              <Coins className="h-5 w-5 text-sage-600" />
+              Key Features
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <FeatureCard
+                icon={<Database className="h-5 w-5" />}
+                title="Real-time DeFi Analysis"
+                description="Continuous analysis of Base DeFi pools using CDP SDK for onchain data, ensuring you always have the latest market intelligence."
+              />
+              
+              <FeatureCard
+                icon={<Bot className="h-5 w-5" />}
+                title="Autonomous Agent Actions"
+                description="AgentKit-powered automation for deploying capital, monitoring conditions, and rebalancing investments without manual intervention."
+              />
+              
+              <FeatureCard
+                icon={<Code className="h-5 w-5" />}
+                title="Smart Contract Automation"
+                description="Automated interactions to stake, unstake, or swap tokens across various Base protocols with optimal timing."
+              />
+              
+              <FeatureCard
+                icon={<CircleCheck className="h-5 w-5" />}
+                title="Risk Management"
+                description="Customizable risk parameters to ensure your capital is deployed according to your risk tolerance and investment goals."
+              />
+              
+              <FeatureCard
+                icon={<TrendingUp className="h-5 w-5" />}
+                title="Yield Optimization"
+                description="Sophisticated algorithms to identify the highest yield opportunities while accounting for impermanent loss and other DeFi-specific risks."
+              />
+              
+              <FeatureCard
+                icon={<CircleDollarSign className="h-5 w-5" />}
+                title="Gas Fee Minimization"
+                description="Transaction batching and timing optimization to reduce gas fees on the Base network, maximizing your net returns."
+              />
             </div>
           </div>
           
@@ -91,12 +138,12 @@ const About = () => {
             </h2>
             <div className="prose text-slate-600 max-w-none mb-6">
               <p>
-                SafeSage is built on a robust technology stack combining blockchain, data, and AI technologies:
+                DeFi Yield Optimizer is built on a robust technology stack combining blockchain, AI, and data technologies:
               </p>
             </div>
             
             <div className="grid md:grid-cols-2 gap-4">
-              {["Blockchain", "Market Data", "Backend", "Frontend", "Design"].map(category => (
+              {["Blockchain", "AI Agent", "Market Data", "Backend", "AI Engine", "Frontend", "Design"].map(category => (
                 <div key={category} className="border border-slate-200 rounded-lg p-4">
                   <h3 className="text-sm font-medium text-slate-800 mb-2">{category}</h3>
                   <div className="flex flex-wrap gap-2">
@@ -108,9 +155,11 @@ const About = () => {
                           className={cn(
                             "text-xs px-2 py-1 rounded-full",
                             category === "Blockchain" && "bg-blue-50 text-blue-700",
+                            category === "AI Agent" && "bg-purple-50 text-purple-700",
                             category === "Market Data" && "bg-green-50 text-green-700",
-                            category === "Backend" && "bg-purple-50 text-purple-700",
-                            category === "Frontend" && "bg-amber-50 text-amber-700",
+                            category === "Backend" && "bg-amber-50 text-amber-700",
+                            category === "AI Engine" && "bg-indigo-50 text-indigo-700",
+                            category === "Frontend" && "bg-orange-50 text-orange-700",
                             category === "Design" && "bg-rose-50 text-rose-700"
                           )}
                         >
@@ -130,10 +179,11 @@ const About = () => {
               <Database className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-medium text-slate-800">Data Privacy & Security</h3>
+              <h3 className="font-medium text-slate-800">Data Security & Custody</h3>
               <p className="text-slate-600 text-sm">
-                SafeSage values your privacy. We analyze on-chain data but never access your private keys or move your assets.
-                All wallet connections are read-only, and we don't store your personal data beyond what's necessary for analysis.
+                DeFi Yield Optimizer Agent never takes custody of your assets. The agent interacts with protocols through
+                read and write operations but your assets remain controlled by you. All wallet connections are
+                secured with advanced encryption to protect your data.
               </p>
             </div>
           </div>

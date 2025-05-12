@@ -9,10 +9,10 @@ interface FeatureCardProps {
   className?: string;
 }
 
-const FeatureCard = ({ icon, title, description, className }: FeatureCardProps) => {
+export const FeatureCard = ({ icon, title, description, className }: FeatureCardProps) => {
   return (
     <div className={cn(
-      "ai-card p-6 flex flex-col items-start",
+      "p-6 flex flex-col items-start bg-white border border-slate-200 rounded-lg shadow-sm",
       className
     )}>
       <div className="h-12 w-12 rounded-lg bg-gradient-to-tr from-sage-500 to-sage-400 
