@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { toast } from "@/components/ui/sonner";
-import { CDP } from "@coinbase/cdp-sdk";
+import * as CoinbaseSDK from "@coinbase/cdp-sdk";
 
 // Basic ABI for ERC20 interactions
 const ERC20_ABI = [
@@ -67,7 +67,7 @@ const TOKENS = {
 // Initialize CDP SDK client for Base network
 const initCdpClient = () => {
   try {
-    return new CDP({
+    return new CoinbaseSDK.default({
       network: "base",
       apiKey: process.env.COINBASE_CDP_API_KEY || "demo", // Use demo key if not provided
     });
