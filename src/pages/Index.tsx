@@ -1,289 +1,217 @@
 
-import MainLayout from '@/components/layout/MainLayout';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import {
+  Robot,
+  TrendingUp,
+  Coins,
+  Exchange,
+  Shield,
+  Activity,
+  Wallet,
+} from 'lucide-react';
+import MainLayout from '@/components/layout/MainLayout';
 import FeatureCard from '@/components/ui/FeatureCard';
 import StepCard from '@/components/ui/StepCard';
-import { Shield, TrendingUp, FileSearch, Link, Wallet } from 'lucide-react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useWallet } from '@/context/WalletContext';
-import { useEffect, useState } from 'react';
-
-// Simple token interface for landing page
-interface SimpleToken {
-  name: string;
-  symbol: string;
-  riskScore: number;
-  logoUrl?: string;
-}
 
 const Index = () => {
-  const { connectWallet, isConnected, isConnecting } = useWallet();
-  const [tokens, setTokens] = useState<SimpleToken[]>([
-    { name: "Ethereum", symbol: "ETH", riskScore: 2.5 },
-    { name: "Bitcoin", symbol: "BTC", riskScore: 2.1 },
-    { name: "Solana", symbol: "SOL", riskScore: 3.8 }
-  ]);
-  
-  const handleConnectClick = () => {
-    if (isConnected || isConnecting) return;
-    connectWallet();
-  };
+  const navigate = useNavigate();
 
-  // Get real-time token data
-  useEffect(() => {
-    const fetchMarketData = async () => {
-      try {
-        const response = await fetch(
-          'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum,bitcoin,solana&order=market_cap_desc'
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-          if (Array.isArray(data) && data.length > 0) {
-            const updatedTokens = tokens.map(token => {
-              const marketData = data.find(
-                (item: any) => item.symbol.toLowerCase() === token.symbol.toLowerCase()
-              );
-              
-              if (marketData) {
-                return {
-                  ...token,
-                  logoUrl: marketData.image
-                };
-              }
-              return token;
-            });
-            
-            setTokens(updatedTokens);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching token market data:", error);
-      }
-    };
-    
-    fetchMarketData();
-  }, []);
-
-  // Redirect to dashboard if already connected
-  useEffect(() => {
-    if (isConnected) {
-      // Optional: Redirect to dashboard after connecting
-      // window.location.href = '/dashboard';
-    }
-  }, [isConnected]);
-  
   return (
     <MainLayout>
       {/* Hero Section */}
-      <section className="py-16 lg:py-24">
-        <div className="safe-container">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h1 className="text-4xl lg:text-5xl font-bold leading-tight tracking-tight gradient-text">
-                SafeSage – Your AI Guide for DeFi Risk
+      <section className="bg-gradient-to-r from-sage-50 via-slate-50 to-sage-50 border-b">
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900">
+                AI-Powered DeFi Yield Optimization
               </h1>
-              <p className="text-xl text-slate-600 max-w-xl">
-                AI acting as a wise guide for safe DeFi choices. Analyze your portfolio risks, 
-                make informed decisions, and protect your investments.
+              <p className="text-xl text-slate-600 mb-6">
+                Maximize your stablecoin returns with our autonomous yield farming agent. 
+                Analyze DeFi protocols on Base, deploy capital, and rebalance automatically 
+                for optimal returns.
               </p>
-              <div className="pt-4">
+              <div className="flex flex-wrap gap-4">
                 <Button 
-                  className="gradient-bg-secondary text-white font-medium mr-4 px-6 py-5"
-                  onClick={handleConnectClick}
-                  disabled={isConnecting}
+                  onClick={() => navigate('/dashboard')} 
+                  size="lg" 
+                  className="bg-sage-600 hover:bg-sage-700"
                 >
-                  {isConnecting ? 
-                    "Connecting..." : 
-                    isConnected ? 
-                      <RouterLink to="/dashboard">View Dashboard</RouterLink> : 
-                      "Connect Wallet"
-                  }
+                  Launch App
                 </Button>
-                
-                <RouterLink to="/about">
-                  <Button variant="outline" className="px-6 py-5">
-                    Learn More
-                  </Button>
-                </RouterLink>
+                <Button 
+                  onClick={() => navigate('/about')} 
+                  variant="outline" 
+                  size="lg"
+                >
+                  Learn More
+                </Button>
               </div>
             </div>
-            <div className="relative">
-              <div className="relative z-10 bg-white rounded-xl shadow-xl border border-slate-100 p-6 md:p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-6 w-6 text-sage-600" />
-                    <h2 className="text-lg font-medium">Portfolio Risk Analysis</h2>
-                  </div>
-                  <div className="text-xs font-medium px-2 py-1 rounded-full bg-sage-100 text-sage-700">
-                    AI Powered
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mb-6">
-                  {tokens.map((token) => (
-                    <div key={token.symbol} className="flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden">
-                          {token.logoUrl ? (
-                            <img src={token.logoUrl} alt={token.symbol} className="h-6 w-6" />
-                          ) : (
-                            <span className="text-sm">{token.symbol}</span>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium">{token.name}</p>
-                          <p className="text-xs text-slate-500">
-                            {token.riskScore <= 3 ? "Low Risk" : 
-                             token.riskScore <= 6 ? "Moderate Risk" : "High Risk"}
-                          </p>
-                        </div>
+            <div className="md:w-1/2">
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Robot className="mr-2 text-sage-500" size={20} />
+                    AI Yield Strategy Preview
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="bg-slate-50 rounded-lg p-4">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-slate-700 font-medium">Current Average APY</span>
+                        <span className="text-sage-600 font-bold">4.2%</span>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">{token.riskScore.toFixed(1)}</p>
-                        <p className="text-xs text-slate-500">Risk Score</p>
+                      <div className="h-1 bg-slate-200 rounded-full mb-2">
+                        <div className="h-1 bg-sage-500 rounded-full" style={{ width: '42%' }}></div>
                       </div>
                     </div>
-                  ))}
-                </div>
-                
-                <div className="text-center">
-                  <RouterLink to={isConnected ? "/dashboard" : "/"}>
-                    <Button 
-                      className="w-full" 
-                      onClick={isConnected ? undefined : handleConnectClick}
-                    >
-                      {isConnected ? "View Full Analysis" : "Connect to View Analysis"}
-                    </Button>
-                  </RouterLink>
+                    <div className="flex items-center justify-center my-2">
+                      <div className="w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center">
+                        <TrendingUp size={18} className="text-sage-600" />
+                      </div>
+                    </div>
+                    <div className="bg-sage-50 rounded-lg p-4">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-slate-700 font-medium">Optimized APY</span>
+                        <span className="text-sage-600 font-bold">8.7%</span>
+                      </div>
+                      <div className="h-1 bg-slate-200 rounded-full mb-2">
+                        <div className="h-1 bg-sage-500 rounded-full" style={{ width: '87%' }}></div>
+                      </div>
+                      <div className="flex justify-end">
+                        <span className="text-xs text-green-600 font-medium">+4.5%</span>
+                      </div>
+                    </div>
+                    <div className="pt-4 text-center">
+                      <Button 
+                        onClick={() => navigate('/strategies')} 
+                        className="w-full bg-sage-600 hover:bg-sage-700"
+                      >
+                        <Robot className="mr-2" size={16} />
+                        Generate My Strategy
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              {/* Decorative elements */}
-              <div className="absolute inset-0 -translate-x-6 -translate-y-6 bg-sage-100 rounded-xl -z-10"></div>
-              <div className="absolute inset-0 translate-x-6 translate-y-6 bg-slate-100 rounded-xl -z-20"></div>
             </div>
           </div>
         </div>
       </section>
-      
+
       {/* Features Section */}
-      <section className="py-16 bg-slate-50">
-        <div className="safe-container">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl font-bold mb-4">Smart AI Protection for Your Portfolio</h2>
-            <p className="text-slate-600">
-              SafeSage uses advanced AI to identify risks in your token portfolio and suggests safer alternatives.
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Optimize Your DeFi Yields</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Our AI-powered platform automatically manages your stablecoin investments
+              to maximize returns while minimizing risks and gas fees.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
-              icon={<Shield className="h-6 w-6" />}
+              icon={<Robot size={24} />}
+              title="AI Strategy Generation"
+              description="Our advanced AI analyzes yield opportunities across Base protocols to create optimized strategies for your portfolio."
+            />
+            <FeatureCard
+              icon={<Exchange size={24} />}
+              title="Automated Execution"
+              description="Execute yield farming strategies with one click. The agent handles all contract interactions for staking, unstaking, and swapping."
+            />
+            <FeatureCard
+              icon={<Activity size={24} />}
+              title="Real-time Monitoring"
+              description="Continuous monitoring of your positions, market conditions, and protocol changes to ensure optimal performance."
+            />
+            <FeatureCard
+              icon={<Shield size={24} />}
               title="Risk Assessment"
-              description="AI-powered risk scoring for each token in your portfolio, identifying potential vulnerabilities."
+              description="Comprehensive risk analysis of each protocol based on audits, TVL history, and protocol mechanics."
             />
-            
             <FeatureCard
-              icon={<TrendingUp className="h-6 w-6" />}
-              title="Market Analysis"
-              description="Compare market performance and liquidity metrics to evaluate token stability and growth potential."
+              icon={<Coins size={24} />}
+              title="Gas Optimization"
+              description="Intelligent transaction timing and batching to minimize gas costs and maximize your effective yield."
             />
-            
             <FeatureCard
-              icon={<FileSearch className="h-6 w-6" />}
-              title="Smart Reports"
-              description="Detailed reports with AI-generated explanations that help you understand risks in simple terms."
-            />
-            
-            <FeatureCard
-              icon={<Link className="h-6 w-6" />}
-              title="Token Comparison"
-              description="Side-by-side comparison of tokens to make informed decisions about your investments."
-            />
-            
-            <FeatureCard
-              icon={<Shield className="h-6 w-6" stroke="currentColor" />}
-              title="Safer Alternatives"
-              description="Get AI suggestions for safer tokens that match your investment criteria and risk tolerance."
-              className="md:col-span-2 lg:col-span-1"
+              icon={<TrendingUp size={24} />}
+              title="Yield Comparison"
+              description="Compare real APY across different protocols and strategies to make informed decisions."
             />
           </div>
         </div>
       </section>
-      
-      {/* How It Works Section */}
-      <section className="py-16">
-        <div className="safe-container">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl font-bold mb-4">How SafeSage Works</h2>
-            <p className="text-slate-600">
-              Simple, secure, and intelligent analysis in just a few steps.
+
+      {/* How It Works */}
+      <section className="py-16 bg-sage-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Our platform makes yield optimization simple and efficient
             </p>
           </div>
-          
-          <div className="max-w-3xl mx-auto">
-            <div className="space-y-12">
-              <StepCard
-                number={1}
-                title="Connect Your Wallet"
-                description="Securely connect your cryptocurrency wallet. We never access your funds or private keys."
-                icon={<Wallet className="h-4 w-4" />}
-              />
-              
-              <StepCard
-                number={2}
-                title="View Your Portfolio"
-                description="See a complete overview of your token holdings and balances in one place."
-                icon={<TrendingUp className="h-4 w-4" />}
-              />
-              
-              <StepCard
-                number={3}
-                title="Generate AI Analysis"
-                description="Let our advanced AI analyze the risk profile of each token in your portfolio."
-                icon={<FileSearch className="h-4 w-4" />}
-              />
-              
-              <StepCard
-                number={4}
-                title="Get Smart Recommendations"
-                description="Receive personalized suggestions for safer alternatives based on your investment goals."
-                icon={<Shield className="h-4 w-4" />}
-              />
-            </div>
+          <div className="max-w-3xl mx-auto space-y-8">
+            <StepCard
+              number={1}
+              title="Connect Your Wallet"
+              description="Securely connect your wallet to view your stablecoins and current yield positions."
+              icon={<Wallet size={18} />}
+            />
+            <StepCard
+              number={2}
+              title="Generate AI Strategy"
+              description="Our AI agent analyzes Base DeFi protocols and your portfolio to create optimized yield strategies."
+              icon={<Robot size={18} />}
+            />
+            <StepCard
+              number={3}
+              title="Execute Strategy"
+              description="One-click execution deploys your stablecoins to the recommended protocols with optimal allocations."
+              icon={<Exchange size={18} />}
+            />
+            <StepCard
+              number={4}
+              title="Automatic Rebalancing"
+              description="The agent continuously monitors yields and automatically rebalances when better opportunities arise."
+              icon={<TrendingUp size={18} />}
+            />
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
-      <section className="py-16 bg-slate-800 text-white">
-        <div className="safe-container text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Secure Your DeFi Investments?</h2>
-          <p className="text-slate-300 max-w-2xl mx-auto mb-8">
-            Connect your wallet now and get immediate AI-powered insights into your portfolio's risk profile.
-          </p>
-          <div>
-            {isConnected ? (
-              <RouterLink to="/dashboard">
-                <Button 
-                  className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
-                >
-                  <FileSearch className="h-5 w-5 mr-2" />
-                  View My Dashboard
-                </Button>
-              </RouterLink>
-            ) : (
-              <Button 
-                className="gradient-bg-secondary text-white font-medium px-8 py-6 text-lg"
-                onClick={handleConnectClick}
-                disabled={isConnecting}
-              >
-                <Wallet className="h-5 w-5 mr-2" />
-                {isConnecting ? "Connecting..." : "Connect Wallet & Start Analyzing"}
-              </Button>
-            )}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="bg-gradient-to-r from-sage-500 to-sage-600 rounded-3xl overflow-hidden shadow-xl">
+            <div className="p-8 md:p-12">
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="md:w-2/3 mb-8 md:mb-0">
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+                    Ready to optimize your stablecoin yields?
+                  </h2>
+                  <p className="text-xl text-sage-100 mb-6">
+                    Start using our AI-powered yield optimizer today and maximize your returns on Base.
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/dashboard')} 
+                    size="lg" 
+                    className="bg-white text-sage-700 hover:bg-sage-50"
+                  >
+                    Launch App
+                  </Button>
+                </div>
+                <div className="md:w-1/3 flex justify-center">
+                  <div className="h-48 w-48 bg-white/10 rounded-full flex items-center justify-center">
+                    <Robot size={96} className="text-white" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

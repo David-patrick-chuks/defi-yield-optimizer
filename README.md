@@ -1,21 +1,20 @@
 
+# DeFi Yield Optimizer Agent
 
-# Safe-Sage: AI-Powered DeFi Risk Analysis
-
-![Safe-Sage Logo](https://github.com/David-patrick-chuks/safe-sage-ui-guardian-62/blob/main/public/safesageLOGO.jpg)
+![Agent Logo](https://github.com/David-patrick-chuks/safe-sage-ui-guardian-62/blob/main/public/safesageLOGO.jpg)
 
 ## 🔮 Overview
 
-Safe-Sage acts as an AI guide for safer DeFi choices, helping users analyze portfolio risks, make informed decisions, and protect their investments. The platform provides risk scoring, comparisons, and recommendations for cryptocurrency assets.
+DeFi Yield Optimizer Agent is an AI-powered tool that analyzes DeFi protocols on Base to identify and execute optimal yield farming strategies for stablecoins like USDC. The agent uses AgentKit to autonomously deploy capital, monitor market conditions, and rebalance investments for maximum returns while minimizing gas fees.
 
-##  Demo Link [YouTube](https://youtu.be/6SpAu5vdrcI)
-## Twitter [Link](https://x.com/TheSafeSage)
 ## 🚀 Features
 
-- **Portfolio Analysis**: Connect your wallet and get AI-driven risk assessment of your token holdings
-- **Token Comparison**: Compare any two tokens across various risk metrics
-- **Risk Scoring**: Get comprehensive risk scores based on market data, technical aspects, and liquidity
-- **AI Recommendations**: Receive suggestions for safer alternatives based on your investment preferences
+- **Real-time Analysis**: Monitor Base DeFi pools using CDP SDK for onchain data
+- **Automated Interactions**: Seamlessly stake, unstake, or swap tokens through smart contract interactions
+- **Portfolio Optimization**: Get AI-driven optimization for your stablecoin yield farming strategy
+- **Gas Fee Optimization**: Minimize transaction costs with intelligent timing of contract executions
+- **Yield Comparison**: Compare APYs across different protocols and liquidity pools
+- **Risk Assessment**: Evaluate protocol risks alongside potential returns
 - **Seamless Wallet Integration**: Connect and disconnect your Web3 wallet with ease
 
 ## 🛠️ Technology Stack
@@ -31,13 +30,13 @@ This project is built with modern web technologies:
 - **Routing**: React Router DOM
 - **API Backend**: Express JS
 - **AI Analysis**: Gemini 
-## Backend Repo [Link](https://github.com/David-patrick-chuks/SafeSage-Backend)
+
 ## 📋 Pages
 
-- **Home** - Introduction to Safe-Sage with risk analysis preview
-- **Dashboard** - User's portfolio overview with token listings and risk metrics
-- **Report** - Detailed AI-generated risk report for user's portfolio
-- **Compare** - Tool for comparing risk metrics between any two tokens
+- **Home** - Introduction to the yield optimizer with strategy preview
+- **Dashboard** - User's portfolio overview with current yield positions
+- **Strategies** - AI-generated optimization strategies for your portfolio
+- **Compare** - Tool for comparing yields between different protocols
 - **About** - Information about the project, technology, and methodology
 - **Legal pages** - Disclaimer, Terms of Service, and Privacy Policy
 
@@ -52,8 +51,8 @@ This project is built with modern web technologies:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/david-chuks-dev/safe-sage.git
-cd safe-sage
+git clone https://github.com/your-username/defi-yield-optimizer.git
+cd defi-yield-optimizer
 ```
 
 2. Install dependencies:
@@ -73,18 +72,20 @@ yarn dev
 ## 🔍 How It Works
 
 1. **Connect Your Wallet**: Securely connect your cryptocurrency wallet. We never access your funds or private keys.
-2. **View Your Portfolio**: See a complete overview of your token holdings and balances in one place.
-3. **Generate AI Analysis**: Let our advanced AI analyze the risk profile of each token in your portfolio.
-4. **Get Smart Recommendations**: Receive personalized suggestions for safer alternatives based on your investment goals.
+2. **View Your Portfolio**: See your current stablecoin positions and yield farming investments in one place.
+3. **Generate AI Strategies**: Let our advanced AI analyze yield opportunities across Base protocols.
+4. **Execute Strategy**: Automatically execute the recommended yield farming strategy with one click.
+5. **Monitor & Rebalance**: The agent continuously monitors your positions and rebalances when better opportunities arise.
 
-## 🧠 AI-Powered Risk Assessment
+## 🧠 AI-Powered Yield Optimization
 
-Safe-Sage's AI engine analyzes multiple factors to provide comprehensive risk assessments:
+Our AI engine analyzes multiple factors to provide comprehensive yield optimization:
 
-- **Market Analysis**: Evaluates market capitalization, trading volume, liquidity, and price volatility
-- **Technical Risk Assessment**: Reviews smart contract audits, code quality metrics, and security incidents
-- **Protocol Analysis**: Examines total value locked, longevity, governance structure, and community engagement
-- **Historical Performance**: Analyzes historical price movements and correlations with broader market trends
+- **APY Analysis**: Evaluates current and historical APY/APR rates across protocols
+- **Protocol Risk Assessment**: Reviews smart contract audits, TVL history, and security incidents
+- **Gas Fee Optimization**: Calculates optimal transaction timing to minimize gas costs
+- **Impermanent Loss Protection**: Considers IL risks for various pool types
+- **Rebalancing Thresholds**: Determines when the yield difference justifies the gas cost of moving funds
 
 ## 🔮 Future Roadmap
 
@@ -92,24 +93,24 @@ Based on user feedback and market research, we've identified several key areas f
 
 ### Key Learnings & Improvement Areas
 
-- **Enhanced Risk Modeling**: Incorporate more sophisticated risk models that can better predict market volatility and protocol vulnerabilities
-- **User Experience Optimization**: Simplify the dashboard interface based on user feedback to make risk metrics more accessible to crypto newcomers
-- **Performance Improvements**: Optimize wallet connection and token data loading to reduce wait times during analysis
+- **Enhanced Yield Modeling**: Incorporate more sophisticated yield prediction models that can better anticipate rate changes
+- **User Experience Optimization**: Simplify the dashboard interface to make yield data more accessible to crypto newcomers
+- **Performance Improvements**: Optimize contract interactions to reduce wait times and gas costs during strategy execution
 
 ### Planned Features
 
-1. **Multi-Chain Support**: Expand beyond Ethereum to analyze assets across Solana, Polygon, Avalanche, and other major blockchains
-2. **Portfolio Simulation**: Allow users to test hypothetical portfolio changes and see how they would affect overall risk metrics
-3. **Risk Alerts**: Implement a notification system to alert users about significant changes in risk profiles of tokens they hold
-4. **Mobile Application**: Develop native mobile apps for iOS and Android to enable on-the-go risk analysis
-5. **API Access**: Create a developer API allowing third-party integration of our risk analysis engine
-6. **Advanced AI Reports**: Enhance the AI analysis with more detailed recommendations and educational content about specific risks
+1. **Multi-Chain Support**: Expand beyond Base to optimize yield across Ethereum, Optimism, Arbitrum, and other major networks
+2. **Strategy Simulation**: Allow users to test hypothetical yield strategies before committing funds
+3. **Yield Alerts**: Implement a notification system to alert users about significant APY changes in their positions
+4. **Mobile Application**: Develop native mobile apps for iOS and Android to enable on-the-go yield management
+5. **API Access**: Create a developer API allowing third-party integration of our yield optimization engine
+6. **Advanced AI Agents**: Develop specialized agents for different DeFi strategies (lending, LPing, derivatives)
 
 ### Community Engagement
 
-- Launch a governance token to allow community participation in platform development decisions
-- Create an educational hub with resources about DeFi risk management
-- Establish partnerships with major DeFi protocols for deeper integration and analysis
+- Launch a governance token to allow community participation in protocol decisions
+- Create an educational hub with resources about DeFi yield farming
+- Establish partnerships with major DeFi protocols for deeper integration and privileged access
 
 ## 👥 Team
 
@@ -124,11 +125,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🔗 Links
 
-- **Live URL**: [Safe-Sage Live Project](https://safesage-main.vercel.app)
-- **Repository [FE]**: [GitHub](https://github.com/David-patrick-chuks/safe-sage)
-- **Repository [BE]**: [GitHub](https://github.com/David-patrick-chuks/safe-sage)
+- **Live URL**: [DeFi Yield Optimizer Live Project](#)
+- **Repository**: [GitHub](#)
 
 ## 📱 Contact
 
 For any inquiries, please reach out to us at davidchuksdev@gmail.com
-
