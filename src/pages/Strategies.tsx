@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import StrategyCard from '@/components/yield/StrategyCard';
@@ -5,8 +6,9 @@ import { useYield } from '@/context/YieldContext';
 import { useWallet } from '@/context/WalletContext';
 import { Button } from '@/components/ui/button';
 import LoadingAI from '@/components/ui/LoadingAI';
-import { Bot } from 'lucide-react';
+import { Bot, Database, Code, TrendingUp, Activity } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import { FeatureCard } from '@/components/ui/FeatureCard';
 
 const Strategies = () => {
   const { userPositions, optimizeYield, executeStrategy } = useYield();
@@ -70,6 +72,31 @@ const Strategies = () => {
     }
   ];
 
+  const features = [
+    {
+      icon: <Database size={20} />,
+      title: "Real-time DeFi Analysis",
+      description: "Continuous analysis of Base DeFi pools using CDP SDK for onchain data, ensuring you always have the latest market intelligence.",
+      highlight: true
+    },
+    {
+      icon: <Code size={20} />,
+      title: "Automated Smart Contracts",
+      description: "Automated interactions to stake, unstake, or swap tokens across various Base protocols with optimal timing.",
+      highlight: true
+    },
+    {
+      icon: <Activity size={20} />,
+      title: "Market Monitoring",
+      description: "Constant monitoring of market conditions to identify the best yield opportunities as they emerge in real-time."
+    },
+    {
+      icon: <TrendingUp size={20} />,
+      title: "Capital Rebalancing",
+      description: "Autonomous rebalancing of your portfolio to maximize returns while respecting your risk preferences."
+    },
+  ];
+
   return (
     <MainLayout>
       <div className="container mx-auto py-8">
@@ -93,20 +120,68 @@ const Strategies = () => {
             <LoadingAI text="AI Optimizing Your Yield Strategy" />
           </div>
         ) : !strategyGenerated ? (
-          <div className="bg-sage-50 border border-sage-200 rounded-lg p-8 text-center">
-            <Bot size={48} className="mx-auto mb-4 text-sage-600" />
-            <h2 className="text-xl font-semibold mb-2">Generate Yield Strategy</h2>
-            <p className="text-slate-600 mb-6">
-              Our AI agent will analyze your portfolio and current market conditions to recommend optimal yield strategies.
-            </p>
-            <Button 
-              onClick={handleGenerateStrategy} 
-              size="lg"
-              className="bg-sage-600 hover:bg-sage-700"
-            >
-              Generate Strategy
-            </Button>
-          </div>
+          <>
+            <div className="bg-sage-50 border border-sage-200 rounded-lg p-8 mb-10">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="w-16 h-16 bg-gradient-to-tr from-sage-600 to-sage-400 rounded-full flex items-center justify-center">
+                  <Bot size={32} className="text-white" />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h2 className="text-xl font-semibold mb-2">Generate Yield Strategy</h2>
+                  <p className="text-slate-600 mb-6">
+                    Our AI agent will analyze your portfolio and current market conditions to recommend optimal yield strategies.
+                  </p>
+                  <Button 
+                    onClick={handleGenerateStrategy} 
+                    size="lg"
+                    className="bg-sage-600 hover:bg-sage-700"
+                  >
+                    Generate Strategy
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mb-10">
+              <h2 className="text-xl font-semibold mb-6">Key Features</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {features.map((feature, index) => (
+                  <FeatureCard
+                    key={index}
+                    icon={feature.icon}
+                    title={feature.title}
+                    description={feature.description}
+                    highlight={feature.highlight}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
+              <h3 className="text-lg font-medium mb-3">How It Works</h3>
+              <p className="text-slate-600 mb-4">
+                Our DeFi Yield Optimizer Agent processes multiple data streams to make informed investment decisions:
+              </p>
+              <ol className="list-decimal list-inside space-y-2 text-slate-600">
+                <li>
+                  <span className="font-medium">Protocol Analysis:</span> The agent scans Base DeFi protocols to identify
+                  yield-generating opportunities, analyzing TVL, APY rates, and protocol risk scores.
+                </li>
+                <li>
+                  <span className="font-medium">Strategy Generation:</span> Based on your risk preferences and market conditions,
+                  the agent generates optimal strategies for your stablecoin assets.
+                </li>
+                <li>
+                  <span className="font-medium">Smart Contract Execution:</span> When you approve a strategy, the agent
+                  interacts with DeFi smart contracts to deploy your capital efficiently.
+                </li>
+                <li>
+                  <span className="font-medium">Portfolio Monitoring:</span> The agent continuously monitors your positions
+                  and market conditions, suggesting rebalances when better opportunities arise.
+                </li>
+              </ol>
+            </div>
+          </>
         ) : (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -123,7 +198,7 @@ const Strategies = () => {
               ))}
             </div>
             
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-6">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 mt-6">
               <h3 className="text-lg font-medium mb-2">How It Works</h3>
               <p className="text-slate-600 text-sm">
                 Our AI agent analyzes on-chain data across multiple DeFi protocols on Base to identify the most efficient yield strategies for your stablecoin assets. When you execute a strategy, the agent will automatically rebalance your portfolio by interacting with the relevant smart contracts to optimize your returns.

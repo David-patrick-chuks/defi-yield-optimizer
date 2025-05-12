@@ -7,16 +7,24 @@ interface FeatureCardProps {
   title: string;
   description: string;
   className?: string;
+  highlight?: boolean;
 }
 
-export const FeatureCard = ({ icon, title, description, className }: FeatureCardProps) => {
+export const FeatureCard = ({ icon, title, description, className, highlight = false }: FeatureCardProps) => {
   return (
     <div className={cn(
-      "p-6 flex flex-col items-start bg-white border border-slate-200 rounded-lg shadow-sm",
+      "p-6 flex flex-col items-start rounded-lg shadow-sm transition-all duration-300",
+      highlight 
+        ? "bg-gradient-to-tr from-sage-50 to-white border-2 border-sage-300" 
+        : "bg-white border border-slate-200",
       className
     )}>
-      <div className="h-12 w-12 rounded-lg bg-gradient-to-tr from-sage-500 to-sage-400 
-                      flex items-center justify-center text-white mb-5">
+      <div className={cn(
+        "h-12 w-12 rounded-lg flex items-center justify-center text-white mb-5",
+        highlight 
+          ? "bg-gradient-to-tr from-sage-600 to-sage-400" 
+          : "bg-gradient-to-tr from-sage-500 to-sage-400"
+      )}>
         {icon}
       </div>
       <h3 className="text-lg font-medium text-slate-800 mb-2">{title}</h3>
