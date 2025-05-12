@@ -67,7 +67,8 @@ const TOKENS = {
 // Initialize CDP SDK client for Base network
 const initCdpClient = () => {
   try {
-    return new CoinbaseSDK.default({
+    // Create a CDP client instance directly
+    return new CoinbaseSDK.CDP({
       network: "base",
       apiKey: process.env.COINBASE_CDP_API_KEY || "demo", // Use demo key if not provided
     });
