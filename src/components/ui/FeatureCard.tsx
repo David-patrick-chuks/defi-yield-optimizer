@@ -15,15 +15,15 @@ export const FeatureCard = ({ icon, title, description, className, highlight = f
     <div className={cn(
       "p-6 flex flex-col items-start rounded-lg shadow-sm transition-all duration-300",
       highlight 
-        ? "bg-gradient-to-tr from-sage-50 to-white border-2 border-sage-300" 
+        ? "bg-gradient-to-tr from-blue-50 to-white border-2 border-blue-300" 
         : "bg-white border border-slate-200",
       className
     )}>
       <div className={cn(
         "h-12 w-12 rounded-lg flex items-center justify-center text-white mb-5",
         highlight 
-          ? "bg-gradient-to-tr from-sage-600 to-sage-400" 
-          : "bg-gradient-to-tr from-sage-500 to-sage-400"
+          ? "bg-gradient-to-tr from-blue-600 to-blue-400" 
+          : "bg-gradient-to-tr from-blue-500 to-blue-400"
       )}>
         {icon}
       </div>

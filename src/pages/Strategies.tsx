@@ -109,7 +109,7 @@ const Strategies = () => {
 
         {!isConnected ? (
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-8 text-center">
-            <Bot size={48} className="mx-auto mb-4 text-sage-500" />
+            <Bot size={48} className="mx-auto mb-4 text-blue-500" />
             <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
             <p className="text-slate-600 mb-4">
               Please connect your wallet to generate personalized yield strategies.
@@ -121,9 +121,9 @@ const Strategies = () => {
           </div>
         ) : !strategyGenerated ? (
           <>
-            <div className="bg-sage-50 border border-sage-200 rounded-lg p-8 mb-10">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 mb-10">
               <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="w-16 h-16 bg-gradient-to-tr from-sage-600 to-sage-400 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-full flex items-center justify-center">
                   <Bot size={32} className="text-white" />
                 </div>
                 <div className="flex-1 text-center md:text-left">
@@ -134,7 +134,7 @@ const Strategies = () => {
                   <Button 
                     onClick={handleGenerateStrategy} 
                     size="lg"
-                    className="bg-sage-600 hover:bg-sage-700"
+                    className="bg-blue-600 hover:bg-blue-700"
                   >
                     Generate Strategy
                   </Button>
@@ -152,6 +152,7 @@ const Strategies = () => {
                     title={feature.title}
                     description={feature.description}
                     highlight={feature.highlight}
+                    className={feature.highlight ? "border-blue-300" : ""}
                   />
                 ))}
               </div>
