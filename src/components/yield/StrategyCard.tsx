@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Robot, TrendingUp } from 'lucide-react';
+import { ArrowRight, Bot, TrendingUp } from 'lucide-react';
 
 interface StrategyCardProps {
   title: string;
@@ -41,7 +40,7 @@ const StrategyCard = ({
       <CardHeader className="bg-gradient-to-r from-sage-50 to-gray-50 border-b border-sage-100">
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            <Robot className="text-sage-500" size={20} />
+            <Bot className="text-sage-500" size={20} />
             {title}
           </CardTitle>
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${getRiskBadgeColor()}`}>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
@@ -10,7 +9,7 @@ import { TabsContent, Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import YieldCard from '@/components/yield/YieldCard';
 import PositionCard from '@/components/yield/PositionCard';
 import LoadingAI from '@/components/ui/LoadingAI';
-import { Wallet, TrendingUp, Coins, Robot } from 'lucide-react';
+import { Wallet, TrendingUp, Coins, Bot } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -135,7 +134,7 @@ const Dashboard = () => {
                   onClick={handleGenerateStrategy}
                   className="flex items-center gap-2"
                 >
-                  <Robot size={18} />
+                  <Bot size={18} />
                   Generate Strategy
                 </Button>
               </div>
@@ -144,7 +143,7 @@ const Dashboard = () => {
                   <div className="flex flex-col md:flex-row gap-6 items-center">
                     <div className="flex-shrink-0">
                       <div className="h-16 w-16 bg-sage-100 rounded-full flex items-center justify-center">
-                        <Robot size={32} className="text-sage-600" />
+                        <Bot size={32} className="text-sage-600" />
                       </div>
                     </div>
                     <div>

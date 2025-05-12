@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import StrategyCard from '@/components/yield/StrategyCard';
@@ -6,7 +5,7 @@ import { useYield } from '@/context/YieldContext';
 import { useWallet } from '@/context/WalletContext';
 import { Button } from '@/components/ui/button';
 import LoadingAI from '@/components/ui/LoadingAI';
-import { Robot } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 
 const Strategies = () => {
@@ -83,7 +82,7 @@ const Strategies = () => {
 
         {!isConnected ? (
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-8 text-center">
-            <Robot size={48} className="mx-auto mb-4 text-sage-500" />
+            <Bot size={48} className="mx-auto mb-4 text-sage-500" />
             <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
             <p className="text-slate-600 mb-4">
               Please connect your wallet to generate personalized yield strategies.
@@ -95,7 +94,7 @@ const Strategies = () => {
           </div>
         ) : !strategyGenerated ? (
           <div className="bg-sage-50 border border-sage-200 rounded-lg p-8 text-center">
-            <Robot size={48} className="mx-auto mb-4 text-sage-600" />
+            <Bot size={48} className="mx-auto mb-4 text-sage-600" />
             <h2 className="text-xl font-semibold mb-2">Generate Yield Strategy</h2>
             <p className="text-slate-600 mb-6">
               Our AI agent will analyze your portfolio and current market conditions to recommend optimal yield strategies.

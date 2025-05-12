@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useWallet } from './WalletContext';
 import { ethers } from 'ethers';
@@ -118,8 +117,8 @@ export const YieldProvider = ({ children }: YieldProviderProps) => {
     
     toast.success("Yield optimization complete!");
     
-    // Return optimized strategy
-    return "Optimized strategy generated";
+    // Return empty to match Promise<void> return type
+    return;
   };
   
   // Execute an optimized yield strategy

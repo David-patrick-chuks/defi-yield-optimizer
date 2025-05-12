@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
-  Robot,
+  Bot,
   TrendingUp,
   Coins,
-  Exchange,
+  ArrowRightLeft,
   Shield,
   Activity,
   Wallet,
@@ -54,7 +53,7 @@ const Index = () => {
               <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
                 <div className="p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Robot className="mr-2 text-sage-500" size={20} />
+                    <Bot className="mr-2 text-sage-500" size={20} />
                     AI Yield Strategy Preview
                   </h3>
                   <div className="space-y-4">
@@ -89,7 +88,7 @@ const Index = () => {
                         onClick={() => navigate('/strategies')} 
                         className="w-full bg-sage-600 hover:bg-sage-700"
                       >
-                        <Robot className="mr-2" size={16} />
+                        <Bot className="mr-2" size={16} />
                         Generate My Strategy
                       </Button>
                     </div>
@@ -113,12 +112,12 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
-              icon={<Robot size={24} />}
+              icon={<Bot size={24} />}
               title="AI Strategy Generation"
               description="Our advanced AI analyzes yield opportunities across Base protocols to create optimized strategies for your portfolio."
             />
             <FeatureCard
-              icon={<Exchange size={24} />}
+              icon={<ArrowRightLeft size={24} />}
               title="Automated Execution"
               description="Execute yield farming strategies with one click. The agent handles all contract interactions for staking, unstaking, and swapping."
             />
@@ -166,13 +165,13 @@ const Index = () => {
               number={2}
               title="Generate AI Strategy"
               description="Our AI agent analyzes Base DeFi protocols and your portfolio to create optimized yield strategies."
-              icon={<Robot size={18} />}
+              icon={<Bot size={18} />}
             />
             <StepCard
               number={3}
               title="Execute Strategy"
               description="One-click execution deploys your stablecoins to the recommended protocols with optimal allocations."
-              icon={<Exchange size={18} />}
+              icon={<ArrowRightLeft size={18} />}
             />
             <StepCard
               number={4}
@@ -207,7 +206,7 @@ const Index = () => {
                 </div>
                 <div className="md:w-1/3 flex justify-center">
                   <div className="h-48 w-48 bg-white/10 rounded-full flex items-center justify-center">
-                    <Robot size={96} className="text-white" />
+                    <Bot size={96} className="text-white" />
                   </div>
                 </div>
               </div>
