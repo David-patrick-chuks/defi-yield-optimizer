@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Menu, X, Wallet, LogOut } from 'lucide-react';
+import { Shield, Menu, X, Wallet, LogOut, Bot, Coins, TrendingUp } from 'lucide-react';
 import { useWallet } from '@/context/WalletContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -33,15 +33,15 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center">
-              <Shield className="h-8 w-8 text-sage-600" />
-              <span className="ml-2 text-xl font-semibold text-slate-800">SafeSage</span>
+              <Bot className="h-8 w-8 text-sage-600" />
+              <span className="ml-2 text-xl font-semibold text-slate-800">DeFi Yield Optimizer</span>
             </Link>
           </div>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/dashboard" className="text-slate-600 hover:text-slate-900">Dashboard</Link>
-            <Link to="/report" className="text-slate-600 hover:text-slate-900">Reports</Link>
+            <Link to="/strategies" className="text-slate-600 hover:text-slate-900">Strategies</Link>
             <Link to="/compare" className="text-slate-600 hover:text-slate-900">Compare</Link>
             <Link to="/about" className="text-slate-600 hover:text-slate-900">About</Link>
             
@@ -100,11 +100,11 @@ const Navbar = () => {
               Dashboard
             </Link>
             <Link 
-              to="/report" 
+              to="/strategies" 
               className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100"
               onClick={() => setIsOpen(false)}
             >
-              Reports
+              Strategies
             </Link>
             <Link 
               to="/compare" 
