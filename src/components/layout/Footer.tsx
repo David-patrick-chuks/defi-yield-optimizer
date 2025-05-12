@@ -9,14 +9,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4">
             <Link to="/" className="flex items-center">
-              <Shield className="h-6 w-6 text-sage-600" />
-              <span className="ml-2 text-lg font-semibold text-slate-800">SafeSage</span>
+              <Shield className="h-6 w-6 text-blue-600" />
+              <span className="ml-2 text-lg font-semibold text-slate-800">DeFi Yield Optimizer</span>
             </Link>
             <p className="text-slate-500 text-sm max-w-xs">
-              AI-powered platform that helps users analyze the risk levels of their crypto token portfolios.
+              AI-powered platform that helps users maximize yield farming returns on Base network protocols.
             </p>
             <div className="flex space-x-4 pt-2">
-              <a href="https://x.com/thesafesage" className="text-slate-400 hover:text-slate-600">
+              <a href="https://x.com/defiyieldopt" className="text-slate-400 hover:text-slate-600">
                 <Twitter size={18} />
                 <span className="sr-only">Twitter</span>
               </a>
@@ -41,13 +41,13 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/report" className="text-slate-500 hover:text-slate-700 text-sm">
-                  Risk Reports
+                <Link to="/strategies" className="text-slate-500 hover:text-slate-700 text-sm">
+                  Yield Strategies
                 </Link>
               </li>
               <li>
                 <Link to="/compare" className="text-slate-500 hover:text-slate-700 text-sm">
-                  Compare Tokens
+                  Compare Yields
                 </Link>
               </li>
               <li>
@@ -87,7 +87,7 @@ const Footer = () => {
         
         <div className="mt-12 pt-6 border-t border-slate-200">
           <p className="text-slate-500 text-sm text-center">
-            &copy; {new Date().getFullYear()} SafeSage. All rights reserved.
+            &copy; {new Date().getFullYear()} DeFi Yield Optimizer. All rights reserved.
           </p>
         </div>
       </div>

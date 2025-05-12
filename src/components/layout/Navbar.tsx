@@ -33,7 +33,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center">
-              <Bot className="h-8 w-8 text-sage-600" />
+              <Bot className="h-8 w-8 text-blue-600" />
               <span className="ml-2 text-xl font-semibold text-slate-800">DeFi Yield Optimizer</span>
             </Link>
           </div>
@@ -48,7 +48,7 @@ const Navbar = () => {
             {isConnected ? (
               <div className="flex items-center gap-2">
                 <Button 
-                  className="bg-sage-500 hover:bg-sage-600" 
+                  className="bg-blue-500 hover:bg-blue-600" 
                   size="sm"
                 >
                   <Wallet className="h-4 w-4 mr-2" />
@@ -124,9 +124,9 @@ const Navbar = () => {
             <div className="pt-2 px-3">
               {isConnected ? (
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between bg-sage-50 p-2 rounded-md">
+                  <div className="flex items-center justify-between bg-blue-50 p-2 rounded-md">
                     <div className="flex items-center gap-2">
-                      <Wallet className="h-4 w-4 text-sage-600" />
+                      <Wallet className="h-4 w-4 text-blue-600" />
                       <span className="text-sm font-mono">{formatAddress(address || '')}</span>
                     </div>
                     <Button

@@ -13,7 +13,7 @@ export function SupportBot() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Welcome to SafeSage! 👋 I\'m your personal AI assistant, ready to help with any questions about crypto risk assessment, DeFi safety practices, or how to use our platform effectively. How can I assist you today?',
+      content: 'Welcome to DeFi Yield Optimizer! 👋 I\'m your personal AI assistant, ready to help with any questions about DeFi yield farming, Base protocols, or how to use our platform effectively. How can I assist you today?',
       timestamp: new Date().toISOString()
     }
   ]);
@@ -106,11 +106,11 @@ export function SupportBot() {
       {isOpen && (
         <div className="fixed bottom-20 right-6 w-80 sm:w-96 bg-white rounded-lg shadow-xl z-40 border border-slate-200 flex flex-col max-h-[70vh]">
           {/* Chat header */}
-          <div className="p-3 border-b border-slate-200 bg-sage-50 rounded-t-lg flex items-center">
-            <Bot className="h-5 w-5 text-sage-600 mr-2" />
+          <div className="p-3 border-b border-slate-200 bg-blue-50 rounded-t-lg flex items-center">
+            <Bot className="h-5 w-5 text-blue-600 mr-2" />
             <div>
-              <h3 className="font-medium text-slate-800">SafeSage Assistant</h3>
-              <p className="text-xs text-slate-500">Your crypto risk analysis expert</p>
+              <h3 className="font-medium text-slate-800">DeFi Yield Assistant</h3>
+              <p className="text-xs text-slate-500">Your yield optimization expert</p>
             </div>
             <Button
               variant="ghost"
@@ -136,7 +136,7 @@ export function SupportBot() {
                     className={`max-w-[80%] p-3 rounded-lg ${
                       chat.role === 'user'
                         ? 'bg-slate-100 text-slate-800'
-                        : 'bg-sage-100 text-slate-800'
+                        : 'bg-blue-100 text-slate-800'
                     }`}
                   >
                     <p className="text-sm">{chat.content}</p>
@@ -149,11 +149,11 @@ export function SupportBot() {
               
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="max-w-[80%] p-3 rounded-lg bg-sage-50 text-slate-800">
+                  <div className="max-w-[80%] p-3 rounded-lg bg-blue-50 text-slate-800">
                     <div className="flex items-center space-x-2">
-                      <div className="h-2 w-2 rounded-full bg-sage-400 animate-pulse"></div>
-                      <div className="h-2 w-2 rounded-full bg-sage-400 animate-pulse delay-75"></div>
-                      <div className="h-2 w-2 rounded-full bg-sage-400 animate-pulse delay-150"></div>
+                      <div className="h-2 w-2 rounded-full bg-blue-400 animate-pulse"></div>
+                      <div className="h-2 w-2 rounded-full bg-blue-400 animate-pulse delay-75"></div>
+                      <div className="h-2 w-2 rounded-full bg-blue-400 animate-pulse delay-150"></div>
                     </div>
                   </div>
                 </div>
@@ -169,7 +169,7 @@ export function SupportBot() {
                   ref={inputRef}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Ask about SafeSage..."
+                  placeholder="Ask about yield strategies..."
                   className="flex-1"
                   disabled={isLoading}
                   autoFocus={isOpen}
