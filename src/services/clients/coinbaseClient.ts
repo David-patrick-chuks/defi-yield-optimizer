@@ -1,16 +1,13 @@
 
-import * as CoinbaseSDK from "@coinbase/cdp-sdk";
+// Mock CDP client for development purposes
+// This file will be updated to use the actual Coinbase CDP SDK in the future
 
-// Initialize CDP SDK client for Base network
+// Initialize mock CDP client for Base network
 export const initCdpClient = () => {
   try {
-    console.log("Initializing CDP client for Base network");
-    
-    // For debugging, log what properties are available
-    console.log("Available CoinbaseSDK properties:", Object.keys(CoinbaseSDK));
+    console.log("Initializing mock CDP client for Base network");
     
     // Create a mock client for development purposes
-    // In a production environment, you would replace this with actual SDK initialization
     const cdpClient = {
       getBalance: async () => ({ balance: "1000.00" }),
       getTransactions: async () => ([]),
@@ -21,10 +18,10 @@ export const initCdpClient = () => {
       // Add other methods as needed
     };
     
-    console.log("CDP client initialized successfully with mock implementation");
+    console.log("Mock CDP client initialized successfully");
     return cdpClient;
   } catch (error) {
-    console.error("Error initializing CDP client:", error);
+    console.error("Error initializing mock CDP client:", error);
     return null;
   }
 };
