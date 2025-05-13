@@ -80,9 +80,9 @@ export default {
 					950: '#020617',
 				},
 				risk: {
-					low: '#68D391',    // Green
-					moderate: '#F6E05E', // Yellow
-					high: '#F56565',   // Red
+					low: '#90CDF4',    // Light blue
+					moderate: '#4299E1', // Medium blue
+					high: '#2B6CB0',   // Dark blue
 				}
 			},
 			borderRadius: {

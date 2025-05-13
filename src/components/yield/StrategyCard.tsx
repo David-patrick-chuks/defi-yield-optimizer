@@ -26,11 +26,11 @@ const StrategyCard = ({
   const getRiskBadgeColor = () => {
     switch (riskLevel) {
       case 'low':
-        return 'bg-risk-low text-green-800';
+        return 'bg-blue-100 text-blue-800';
       case 'moderate':
-        return 'bg-risk-moderate text-amber-800';
+        return 'bg-blue-200 text-blue-800';
       case 'high':
-        return 'bg-risk-high text-red-800';
+        return 'bg-blue-300 text-blue-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
