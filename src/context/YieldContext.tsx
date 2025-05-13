@@ -87,14 +87,18 @@ export const YieldProvider = ({ children }: YieldProviderProps) => {
   
   // Fetch token balances
   const getTokenBalances = async (address: string): Promise<Record<string, string>> => {
-    // Use CDP client to fetch token balances in production
-    // For now, return realistic data
-    return {
-      "USDC": "1240.50",
-      "DAI": "891.25",
-      "USDT": "356.78",
-      "WETH": "0.42"
-    };
+    try {
+      if (!cdpClient) {
+        throw new Error("CDP client not initialized");
+      }
+      
+      // Use CDP client to fetch real token balances
+      return await cdpClient.getTokenBalances(address);
+    } catch (error) {
+      console.error("Failed to fetch token balances:", error);
+      toast.error("Failed to fetch token balances");
+      return {};
+    }
   };
   
   // Fetch user positions
@@ -107,29 +111,12 @@ export const YieldProvider = ({ children }: YieldProviderProps) => {
     try {
       const provider = getProvider();
       
-      // In production, fetch real positions from CDP client
-      // For now, use realistic position data
-      const positions: Position[] = [
-        {
-          protocol: "Aerodrome",
-          pool: "USDC-WETH LP",
-          invested: 2000,
-          currentValue: 2145.50,
-          apy: 8.45,
-          tokens: ["USDC", "WETH"],
-          risk: 'low'
-        },
-        {
-          protocol: "Moonwell",
-          pool: "USDC Lending",
-          invested: 1500,
-          currentValue: 1578.25,
-          apy: 3.87,
-          tokens: ["USDC"],
-          risk: 'low'
-        }
-      ];
+      // Use CDP client to fetch real positions
+      if (!cdpClient) {
+        throw new Error("CDP client not initialized");
+      }
       
+      const positions = await cdpClient.getUserPositions(address);
       setUserPositions(positions);
       
       // Get token balances
@@ -145,32 +132,53 @@ export const YieldProvider = ({ children }: YieldProviderProps) => {
   
   // AI optimization algorithm for yield strategy
   const optimizeYield = async () => {
+    if (!isConnected || !address) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+    
     toast.info("AI analyzing yield opportunities...");
     
-    // In a real implementation, this would use an AI model to optimize yield
-    // For now, simulate with a timeout
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast.success("Yield optimization complete!");
-    
-    // Return empty to match Promise<void> return type
-    return;
+    try {
+      if (!cdpClient) {
+        throw new Error("CDP client not initialized");
+      }
+      
+      // Use CDP client to run real yield optimization
+      await cdpClient.optimizeYield(address);
+      
+      toast.success("Yield optimization complete!");
+    } catch (error) {
+      console.error("Failed to optimize yield:", error);
+      toast.error("Failed to optimize yield");
+    }
   };
   
   // Execute an optimized yield strategy
   const executeStrategy = async (strategy: string) => {
-    if (!isConnected) {
+    if (!isConnected || !address) {
       toast.error("Please connect your wallet first");
       return;
     }
     
     toast.info(`Executing strategy: ${strategy}`);
     
-    // In a real implementation, this would execute transactions
-    // For now, simulate with a timeout
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    toast.success("Strategy executed successfully!");
+    try {
+      if (!cdpClient) {
+        throw new Error("CDP client not initialized");
+      }
+      
+      // Use CDP client to execute real strategy
+      await cdpClient.executeStrategy(strategy, address);
+      
+      toast.success("Strategy executed successfully!");
+      
+      // Refresh positions after executing strategy
+      await refreshPositions();
+    } catch (error) {
+      console.error("Failed to execute strategy:", error);
+      toast.error("Failed to execute strategy");
+    }
   };
   
   // Effect to fetch yields when wallet connects

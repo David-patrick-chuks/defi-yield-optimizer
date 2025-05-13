@@ -7,9 +7,6 @@ export { PROTOCOLS, TOKENS, getTokenMockPrices } from './constants/defiConstants
 // Re-export types
 export type { YieldPool } from './types/yieldTypes';
 
-// Re-export mock data
-export { MOCK_USER_POSITIONS } from './mocks/mockData';
-
 // Re-export protocol data functions
 export { fetchYieldOptions, fetchProtocolTVL } from './data/protocolData';
 

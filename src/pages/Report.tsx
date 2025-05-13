@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import LoadingAI from '@/components/ui/LoadingAI';
 import TokenRiskCard from '@/components/ui/TokenRiskCard';
 import { Button } from '@/components/ui/button';
-import { Download, Share } from 'lucide-react';
+import { Download } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -13,10 +14,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { downloadReport, shareReport } from '@/utils/reportUtils';
+import { downloadReport } from '@/utils/reportUtils';
 import { analyzeTokens } from '@/services/openai';
 import { toast } from '@/components/ui/sonner';
 import { useWallet } from '@/context/WalletContext';
+import { cdpClient } from '@/services/clients/coinbaseClient';
 
 interface TokenData {
   name: string;
@@ -33,25 +35,6 @@ interface TokenAnalysis {
   suggestions?: string;
 }
 
-const SUPPORTED_TOKENS = [
-  { name: 'Ethereum', symbol: 'ETH', coingeckoId: 'ethereum' },
-  { name: 'Bitcoin', symbol: 'BTC', coingeckoId: 'bitcoin' },
-  { name: 'MoveVM', symbol: 'MOVE', coingeckoId: 'move-vm' },
-  { name: 'IOTA', symbol: 'MIOTA', coingeckoId: 'iota' },
-  { name: 'Solana', symbol: 'SOL', coingeckoId: 'solana' },
-  { name: 'Cardano', symbol: 'ADA', coingeckoId: 'cardano' },
-  { name: 'Polkadot', symbol: 'DOT', coingeckoId: 'polkadot' },
-  { name: 'Chainlink', symbol: 'LINK', coingeckoId: 'chainlink' },
-  { name: 'Uniswap', symbol: 'UNI', coingeckoId: 'uniswap' },
-  { name: 'Avalanche', symbol: 'AVAX', coingeckoId: 'avalanche-2' },
-  { name: 'Polygon', symbol: 'MATIC', coingeckoId: 'matic-network' },
-  { name: 'Near Protocol', symbol: 'NEAR', coingeckoId: 'near' },
-  { name: 'Cosmos', symbol: 'ATOM', coingeckoId: 'cosmos' },
-  { name: 'Algorand', symbol: 'ALGO', coingeckoId: 'algorand' },
-  { name: 'Filecoin', symbol: 'FIL', coingeckoId: 'filecoin' },
-  { name: 'Tezos', symbol: 'XTZ', coingeckoId: 'tezos' },
-];
-
 const Report = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenAnalysis, setTokenAnalysis] = useState<TokenAnalysis[]>([]);
@@ -66,57 +49,49 @@ const Report = () => {
       }
 
       toast.info('AI risk analysis starting...');
-      const realTokens: TokenData[] = [];
-
-      if (parseFloat(balance) > 0) {
-        realTokens.push({
-          name: 'Ethereum',
-          symbol: 'ETH',
-          balance: parseFloat(balance),
-        });
-      }
-
       try {
-        const ids = SUPPORTED_TOKENS.map((t) => t.coingeckoId).join(',');
-        const res = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}`
-        );
-        const marketData = await res.json();
-
-        for (const token of realTokens) {
-          const tokenInfo = marketData.find(
-            (d: any) => d.symbol.toLowerCase() === token.symbol.toLowerCase()
-          );
-          if (tokenInfo) {
-            token.price = tokenInfo.current_price;
-          }
+        // Use CDP client to get real token data
+        if (!cdpClient) {
+          throw new Error("CDP client not initialized");
         }
-      } catch (err) {
-        console.error('Error fetching market prices:', err);
-      }
+        
+        const userTokens = await cdpClient.getUserTokens(address);
+        
+        if (!userTokens || userTokens.length === 0) {
+          toast.warning('No tokens found in your wallet for analysis');
+          setTokenAnalysis([
+            {
+              name: 'N/A',
+              symbol: 'N/A',
+              riskScore: 1,
+              explanation: 'No tokens were found in your wallet. No risk detected.',
+              suggestions: 'Consider adding some assets to your wallet for future analysis.',
+            },
+          ]);
+          setIsLoading(false);
+          return;
+        }
 
-      if (realTokens.length === 0) {
-        toast.warning('No supported tokens with non-zero balance found. Showing empty analysis.');
-        setTokenAnalysis([
-          {
-            name: 'N/A',
-            symbol: 'N/A',
-            riskScore: 1,
-            explanation: 'No tokens were found in your wallet. No risk detected.',
-            suggestions: 'Consider adding some assets to your wallet for future analysis.',
-          },
-        ]);
-        setIsLoading(false);
-        return;
-      }
+        // Add ETH if balance is positive
+        if (parseFloat(balance) > 0) {
+          userTokens.push({
+            name: 'Ethereum',
+            symbol: 'ETH',
+            balance: parseFloat(balance),
+          });
+        }
 
-      try {
-        const analysis = await analyzeTokens(realTokens);
+        // Fetch token prices from CDP client or external API
+        const tokensWithPrices = await cdpClient.getTokenPrices(userTokens);
+
+        // Analyze tokens with AI
+        const analysis = await analyzeTokens(tokensWithPrices);
         setTokenAnalysis(analysis);
         toast.success('AI risk analysis completed');
       } catch (err) {
         console.error('AI analysis failed:', err);
         toast.error('Failed to generate AI report');
+        setTokenAnalysis([]);
       } finally {
         setIsLoading(false);
       }
@@ -149,14 +124,6 @@ const Report = () => {
     }
   };
 
-  const handleShareReport = async () => {
-    try {
-      await shareReport();
-    } catch (err) {
-      toast.error('Failed to share report');
-    }
-  };
-
   return (
     <MainLayout>
       <div className="safe-container py-8">
@@ -177,10 +144,6 @@ const Report = () => {
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
-                  {/* <Button variant="outline" onClick={handleShareReport}>
-                    <Share className="h-4 w-4 mr-2" />
-                    Share
-                  </Button> */}
                 </div>
               </div>
 
