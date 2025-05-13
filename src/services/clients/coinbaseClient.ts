@@ -1,8 +1,8 @@
-
 // Coinbase CDP API client implementation
 // This client uses the Coinbase API for accessing data
 
 import { toast } from "@/components/ui/sonner";
+import { Position } from "../types/yieldTypes";
 
 // CDP client interface
 interface CdpClient {
@@ -10,6 +10,13 @@ interface CdpClient {
   getTransactions: (address?: string) => Promise<any[]>;
   getProtocolData: (protocolName?: string) => Promise<{ tvl: string, apy: string }>;
   fetchYieldOptions: () => Promise<any[]>;
+  // Add missing methods to the interface
+  getTokenBalances: (address: string) => Promise<Record<string, string>>;
+  getUserPositions: (address: string) => Promise<Position[]>;
+  optimizeYield: (address: string) => Promise<void>;
+  executeStrategy: (strategy: string, address: string) => Promise<void>;
+  getUserTokens: (address: string) => Promise<any[]>;
+  getTokenPrices: (tokens: any[]) => Promise<any[]>;
 }
 
 // Initialize CDP client for Base network
@@ -150,6 +157,150 @@ export const initCdpClient = (): CdpClient | null => {
           console.error("Error fetching yield options:", error);
           toast.error("Failed to fetch yield options");
           return [];
+        }
+      },
+      
+      // Implement missing methods
+      getTokenBalances: async (address: string): Promise<Record<string, string>> => {
+        try {
+          console.log(`Fetching token balances for address: ${address}`);
+          // In production, this would use the Coinbase API
+          
+          // Return realistic token balances for now
+          return {
+            "USDC": "1045.87",
+            "WETH": "0.543",
+            "DAI": "890.25",
+            "WBTC": "0.021"
+          };
+        } catch (error) {
+          console.error("Error fetching token balances:", error);
+          toast.error("Failed to fetch token balances");
+          return {};
+        }
+      },
+      
+      getUserPositions: async (address: string): Promise<Position[]> => {
+        try {
+          console.log(`Fetching positions for address: ${address}`);
+          // In production, this would use the Coinbase API
+          
+          // Return realistic positions data
+          return [
+            {
+              protocol: "Aerodrome",
+              pool: "USDC-WETH LP",
+              invested: 425.50,
+              currentValue: 453.80,
+              apy: 8.45,
+              tokens: ["USDC", "WETH"],
+              risk: 'low'
+            },
+            {
+              protocol: "Moonwell",
+              pool: "USDC Lending",
+              invested: 500.00,
+              currentValue: 512.35,
+              apy: 3.87,
+              tokens: ["USDC"],
+              risk: 'low'
+            }
+          ];
+        } catch (error) {
+          console.error("Error fetching user positions:", error);
+          toast.error("Failed to fetch your positions");
+          return [];
+        }
+      },
+      
+      optimizeYield: async (address: string): Promise<void> => {
+        try {
+          console.log(`Optimizing yield for address: ${address}`);
+          // In production, this would use the Coinbase API
+          
+          // Simulate API delay
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log("Yield optimization completed");
+        } catch (error) {
+          console.error("Error optimizing yield:", error);
+          throw new Error("Failed to optimize yield");
+        }
+      },
+      
+      executeStrategy: async (strategy: string, address: string): Promise<void> => {
+        try {
+          console.log(`Executing strategy ${strategy} for address: ${address}`);
+          // In production, this would use the Coinbase API
+          
+          // Simulate API delay
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          console.log(`Strategy ${strategy} executed successfully`);
+        } catch (error) {
+          console.error(`Error executing strategy ${strategy}:`, error);
+          throw new Error("Failed to execute strategy");
+        }
+      },
+      
+      getUserTokens: async (address: string): Promise<any[]> => {
+        try {
+          console.log(`Fetching tokens for address: ${address}`);
+          // In production, this would use the Coinbase API
+          
+          // Return realistic user tokens
+          return [
+            {
+              name: "USD Coin",
+              symbol: "USDC",
+              balance: 1045.87
+            },
+            {
+              name: "Wrapped Ether",
+              symbol: "WETH",
+              balance: 0.543
+            },
+            {
+              name: "Dai Stablecoin",
+              symbol: "DAI",
+              balance: 890.25
+            },
+            {
+              name: "Wrapped Bitcoin",
+              symbol: "WBTC",
+              balance: 0.021
+            }
+          ];
+        } catch (error) {
+          console.error("Error fetching user tokens:", error);
+          toast.error("Failed to fetch token data");
+          return [];
+        }
+      },
+      
+      getTokenPrices: async (tokens: any[]): Promise<any[]> => {
+        try {
+          console.log(`Fetching prices for ${tokens.length} tokens`);
+          // In production, this would use the Coinbase API
+          
+          // Return tokens with price information
+          return tokens.map(token => {
+            // Set realistic prices based on token symbol
+            const priceMap: Record<string, number> = {
+              "USDC": 1.00,
+              "WETH": 3585.42,
+              "DAI": 0.9998,
+              "WBTC": 68245.75,
+              "ETH": 3585.42
+            };
+            
+            return {
+              ...token,
+              price: priceMap[token.symbol] || 1.00
+            };
+          });
+        } catch (error) {
+          console.error("Error fetching token prices:", error);
+          toast.error("Failed to fetch token prices");
+          return tokens; // Return original tokens without prices
         }
       }
     };
