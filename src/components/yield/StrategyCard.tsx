@@ -37,11 +37,11 @@ const StrategyCard = ({
   };
 
   return (
-    <Card className="border-sage-200 shadow-md overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-sage-50 to-gray-50 border-b border-sage-100">
+    <Card className="border-blue-200 shadow-md overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-gray-50 border-b border-blue-100">
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            <Bot className="text-sage-500" size={20} />
+            <Bot className="text-blue-500" size={20} />
             {title}
           </CardTitle>
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${getRiskBadgeColor()}`}>
@@ -58,22 +58,22 @@ const StrategyCard = ({
             <span className="text-lg font-medium">{currentApy.toFixed(2)}%</span>
           </div>
           <div className="flex items-center justify-center my-2">
-            <ArrowRight className="text-sage-500" size={24} />
+            <ArrowRight className="text-blue-500" size={24} />
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Target APY</span>
-            <span className="text-lg font-bold text-sage-600">{targetApy.toFixed(2)}%</span>
+            <span className="text-lg font-bold text-blue-600">{targetApy.toFixed(2)}%</span>
           </div>
         </div>
         
-        <div className="flex items-center justify-center gap-2 bg-sage-50 p-2 rounded-lg">
-          <TrendingUp className="text-sage-600" size={18} />
-          <span className="text-sm font-medium text-sage-700">
+        <div className="flex items-center justify-center gap-2 bg-blue-50 p-2 rounded-lg">
+          <TrendingUp className="text-blue-600" size={18} />
+          <span className="text-sm font-medium text-blue-700">
             Projected Increase: +{apyIncrease.toFixed(2)}% APY
           </span>
         </div>
       </CardContent>
-      <CardFooter className="bg-gradient-to-r from-gray-50 to-sage-50 border-t border-sage-100">
+      <CardFooter className="bg-gradient-to-r from-gray-50 to-blue-50 border-t border-blue-100">
         <Button className="w-full" onClick={onExecute}>
           Execute Strategy
         </Button>
